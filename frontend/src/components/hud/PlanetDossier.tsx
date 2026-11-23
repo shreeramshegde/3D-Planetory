@@ -17,8 +17,11 @@ export const PlanetDossier = () => {
   const cameraMode = useUniverseStore((s) => s.cameraMode);
   const setCameraMode = useUniverseStore((s) => s.setCameraMode);
   const completedChallenges = useUniverseStore((s) => s.completedChallenges);
+  const triggerDive = useUniverseStore((s) => s.triggerDive);
+  const resetDive = useUniverseStore((s) => s.resetDive);
 
   const [activeTab, setActiveTab] = useState<'dossier' | 'sim' | 'transcript'>('dossier');
+  const [isDivingLocal, setIsDivingLocal] = useState(false);
 
   useEffect(() => {
     if (cameraMode === 'challenge') {
@@ -40,6 +43,16 @@ export const PlanetDossier = () => {
     soundEngine.playClick();
     setActiveTab(tab);
     setCameraMode(tab === 'sim' ? 'challenge' : 'orbit');
+  };
+
+  const handleInitiateSimulation = () => {
+    setIsDivingLocal(true);
+    triggerDive();
+    setTimeout(() => {
+      setIsDivingLocal(false);
+      handleTabChange('sim');
+      resetDive();
+    }, 750);
   };
 
   const openDedicatedTab = () => {
@@ -180,10 +193,11 @@ export const PlanetDossier = () => {
               {/* Launch Challenge */}
               <div className="pt-3 border-t border-bone-hairline space-y-2">
                 <button
-                  onClick={() => handleTabChange('sim')}
-                  className="w-full py-2.5 bg-vermilion hover:bg-vermilion-hover text-ink font-mono text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                  onClick={handleInitiateSimulation}
+                  disabled={isDivingLocal}
+                  className="w-full py-2.5 bg-vermilion hover:bg-vermilion-hover text-ink font-mono text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                 >
-                  <span>{isPlotted ? 'Replay simulation' : 'Begin verification simulation'}</span>
+                  <span>{isDivingLocal ? 'Entering atmosphere...' : isPlotted ? 'Replay simulation' : 'Begin verification simulation'}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -7,25 +7,24 @@ import { useUniverseStore } from '../../store/useUniverseStore';
 import { soundEngine } from '../../audio/soundEngine';
 import { OrbitRing } from './OrbitRing';
 import { Check } from 'lucide-react';
-import {
-  createGasGiantTexture,
-  createNeuralTexture,
-  createLavaCrustTexture,
-  createCrystallineTexture,
-  createHexShieldTexture,
-} from '../../utils/proceduralTextures';
+import { StratosMetaphor } from './planets/StratosMetaphor';
+import { SynthetixMetaphor } from './planets/SynthetixMetaphor';
+import { KronosMetaphor } from './planets/KronosMetaphor';
+import { PrismaMetaphor } from './planets/PrismaMetaphor';
+import { CitadelMetaphor } from './planets/CitadelMetaphor';
 
 interface PlanetProps {
   planet: PlanetConfig;
 }
 
 export const Planet = ({ planet }: PlanetProps) => {
-  const planetGroupRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
-  const cloudMeshRef = useRef<THREE.Mesh>(null);
-  const atmosphereRef = useRef<THREE.Mesh>(null);
-  const moonsRef = useRef<THREE.Group>(null);
+  // The central star (The Kernel) is rendered by Sun.tsx at origin [0, 0, 0]
+  if (planet.id === 'kernel') {
+    return null;
+  }
 
+  const planetGroupRef = useRef<THREE.Group>(null);
+  const moonsRef = useRef<THREE.Group>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const activePlanetId = useUniverseStore((s) => s.activePlanetId);
@@ -35,26 +34,8 @@ export const Planet = ({ planet }: PlanetProps) => {
 
   const isCurrentFocus = activePlanetId === planet.id;
 
-  // Generate unique domain procedural texture
-  const surfaceTexture = useMemo(() => {
-    switch (planet.id) {
-      case 'cloud':
-        return createGasGiantTexture(planet.color, planet.secondaryColor);
-      case 'ai':
-        return createNeuralTexture();
-      case 'backend':
-        return createLavaCrustTexture();
-      case 'frontend':
-        return createCrystallineTexture();
-      case 'security':
-        return createHexShieldTexture();
-      default:
-        return null;
-    }
-  }, [planet.id, planet.color, planet.secondaryColor]);
-
-  // Initial randomized orbital angle
-  const angleRef = useRef<number>(Math.random() * Math.PI * 2);
+  // Initial orbital angle
+  const angleRef = useRef<number>((planet.orbitRadius * 1.618) % (Math.PI * 2));
 
   useFrame((_, delta) => {
     // 1. Orbital revolution with orbital inclination
@@ -63,29 +44,13 @@ export const Planet = ({ planet }: PlanetProps) => {
 
     const x = Math.cos(angleRef.current) * planet.orbitRadius;
     const z = Math.sin(angleRef.current) * planet.orbitRadius;
-    // 3D orbital inclination gives true height depth
     const y = Math.sin(angleRef.current) * planet.orbitRadius * planet.inclination;
 
     if (planetGroupRef.current) {
       planetGroupRef.current.position.set(x, y, z);
     }
 
-    // 2. Axial rotation with axial tilt
-    if (meshRef.current) {
-      meshRef.current.rotation.y += planet.rotationSpeed * (1 + delta);
-    }
-
-    // 3. Counter-rotating atmospheric cloud layer
-    if (cloudMeshRef.current) {
-      cloudMeshRef.current.rotation.y -= planet.rotationSpeed * 0.7 * delta;
-    }
-
-    // 4. Atmosphere glow
-    if (atmosphereRef.current) {
-      atmosphereRef.current.rotation.y -= planet.rotationSpeed * 0.3 * delta;
-    }
-
-    // 5. Moons rotation
+    // 2. Moons rotation
     if (moonsRef.current && planet.moons) {
       moonsRef.current.children.forEach((moonObj, i) => {
         const moonConfig = planet.moons![i];
@@ -95,6 +60,23 @@ export const Planet = ({ planet }: PlanetProps) => {
       });
     }
   });
+
+  const renderDomainMetaphor = () => {
+    switch (planet.id) {
+      case 'cloud':
+        return <StratosMetaphor planet={planet} />;
+      case 'ai':
+        return <SynthetixMetaphor planet={planet} />;
+      case 'backend':
+        return <KronosMetaphor planet={planet} />;
+      case 'frontend':
+        return <PrismaMetaphor planet={planet} />;
+      case 'security':
+        return <CitadelMetaphor planet={planet} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
@@ -110,9 +92,8 @@ export const Planet = ({ planet }: PlanetProps) => {
         ref={planetGroupRef}
         rotation={[planet.inclination, 0, planet.axialTilt]}
       >
-        {/* Main Planet Body with High-Detail Procedural Texture */}
-        <mesh
-          ref={meshRef}
+        {/* Domain-specific GLSL and Procedural 3D Metaphor */}
+        <group
           onClick={(e) => {
             e.stopPropagation();
             setActivePlanet(planet.id);
@@ -128,59 +109,8 @@ export const Planet = ({ planet }: PlanetProps) => {
             document.body.style.cursor = 'default';
           }}
         >
-          <sphereGeometry args={[planet.size, 64, 64]} />
-          <meshStandardMaterial
-            map={surfaceTexture}
-            roughness={0.55}
-            metalness={0.25}
-            emissive={planet.secondaryColor}
-            emissiveIntensity={isHovered || isCurrentFocus ? 0.35 : 0.12}
-          />
-        </mesh>
-
-        {/* Counter-rotating cloud shell for atmospheric depth */}
-        <mesh ref={cloudMeshRef}>
-          <sphereGeometry args={[planet.size * 1.025, 48, 48]} />
-          <meshStandardMaterial
-            color={planet.atmosphereColor}
-            transparent
-            opacity={0.16}
-            roughness={0.8}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Outer Fresnel Atmosphere Shell */}
-        <mesh ref={atmosphereRef}>
-          <sphereGeometry args={[planet.size * 1.14, 32, 32]} />
-          <meshBasicMaterial
-            color={planet.atmosphereColor}
-            transparent
-            opacity={isHovered || isCurrentFocus ? 0.28 : 0.14}
-            side={THREE.BackSide}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Planetary Rings */}
-        {planet.hasRings && (
-          <mesh rotation={[-Math.PI / 2.6, 0.15, 0]}>
-            <ringGeometry
-              args={[
-                planet.ringInnerRadius || planet.size * 1.4,
-                planet.ringOuterRadius || planet.size * 2.3,
-                64,
-              ]}
-            />
-            <meshStandardMaterial
-              color={planet.ringColor || planet.color}
-              side={THREE.DoubleSide}
-              transparent
-              opacity={0.6}
-              roughness={0.5}
-            />
-          </mesh>
-        )}
+          {renderDomainMetaphor()}
+        </group>
 
         {/* Orbiting Moons */}
         {planet.moons && (
@@ -188,7 +118,7 @@ export const Planet = ({ planet }: PlanetProps) => {
             {planet.moons.map((moon: MoonConfig, idx: number) => (
               <group key={idx}>
                 <mesh position={[moon.distance, 0, 0]}>
-                  <sphereGeometry args={[moon.size, 20, 20]} />
+                  <sphereGeometry args={[moon.size, 16, 16]} />
                   <meshStandardMaterial
                     color={moon.color}
                     roughness={0.8}
@@ -203,7 +133,7 @@ export const Planet = ({ planet }: PlanetProps) => {
         {/* Observatory Surveyor Reticle Tag */}
         {(!activePlanetId || isCurrentFocus || isHovered) && (
           <Html
-            position={[0, planet.size * 1.6, 0]}
+            position={[0, planet.size * 1.5 + 0.6, 0]}
             center
             distanceFactor={38}
             zIndexRange={[20, 0]}

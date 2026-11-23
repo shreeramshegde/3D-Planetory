@@ -68,7 +68,7 @@ export const useUniverseStore = create<UniverseStore>()(
 
       return {
         activePlanetId: null,
-        cameraMode: 'overview',
+        cameraMode: 'intro',
         completedChallenges: {
           kernel: false,
           cloud: false,
@@ -83,6 +83,31 @@ export const useUniverseStore = create<UniverseStore>()(
         systemHarmony: 0,
         plottedCount: 0,
         pilotCallsign: 'ARCHIVIST-01',
+        isIntroActive: true,
+        isDiving: false,
+
+        skipIntro: () => {
+          soundEngine.playClick();
+          set({
+            isIntroActive: false,
+            cameraMode: 'overview',
+          });
+        },
+
+        triggerDive: () => {
+          soundEngine.playWarp();
+          set({
+            isDiving: true,
+            cameraMode: 'dive',
+          });
+        },
+
+        resetDive: () => {
+          set({
+            isDiving: false,
+            cameraMode: 'orbit',
+          });
+        },
 
         setActivePlanet: (id: TechnicalDomainId | null) => {
           if (id) {

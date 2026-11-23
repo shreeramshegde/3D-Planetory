@@ -43,7 +43,7 @@ export interface PlanetConfig {
   challenge: ChallengeConfig;
 }
 
-export type CameraMode = 'overview' | 'orbit' | 'challenge';
+export type CameraMode = 'overview' | 'orbit' | 'challenge' | 'intro' | 'dive';
 
 export interface UniverseStore {
   activePlanetId: TechnicalDomainId | null;
@@ -55,6 +55,8 @@ export interface UniverseStore {
   systemHarmony: number; // 0 to 100 percentage
   plottedCount: number; // 0 to 6 plotted bodies
   pilotCallsign: string;
+  isIntroActive: boolean;
+  isDiving: boolean;
 
   // Actions
   setActivePlanet: (id: TechnicalDomainId | null) => void;
@@ -64,4 +66,7 @@ export interface UniverseStore {
   toggleAudio: () => void;
   resetUniverse: () => void;
   setPilotCallsign: (callsign: string) => void;
+  skipIntro: () => void;
+  triggerDive: () => void;
+  resetDive: () => void;
 }

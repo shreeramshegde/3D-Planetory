@@ -5,6 +5,7 @@ import { Header } from './components/hud/Header';
 import { PlanetSelector } from './components/hud/PlanetSelector';
 import { PlanetDossier } from './components/hud/PlanetDossier';
 import { VictoryOverlay } from './components/hud/VictoryOverlay';
+import { IntroOverlay } from './components/hud/IntroOverlay';
 import { FullscreenTerminal } from './pages/FullscreenTerminal';
 import { soundEngine } from './audio/soundEngine';
 
@@ -19,6 +20,7 @@ function UniverseView() {
       <PlanetSelector />
       <PlanetDossier />
       <VictoryOverlay />
+      <IntroOverlay />
 
       {/* 4% CSS-only SVG Film Grain Overlay */}
       <div className="absolute inset-0 pointer-events-none film-grain z-10" />

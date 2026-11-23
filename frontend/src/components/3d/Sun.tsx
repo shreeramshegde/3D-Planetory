@@ -1,29 +1,43 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, PointLight } from 'three';
+import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { useUniverseStore } from '../../store/useUniverseStore';
 import { soundEngine } from '../../audio/soundEngine';
-import { createSunTexture } from '../../utils/proceduralTextures';
+import { SunShader } from './shaders/SunShader';
+import { ProcessDotsRing } from './planets/ProcessDotsRing';
+import { Check } from 'lucide-react';
 
 export const Sun = () => {
-  const coreRef = useRef<Mesh>(null);
-  const coronaRef = useRef<Mesh>(null);
-  const lightRef = useRef<PointLight>(null);
-  const setActivePlanet = useUniverseStore((s) => s.setActivePlanet);
-  const activePlanetId = useUniverseStore((s) => s.activePlanetId);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const coronaRef = useRef<THREE.Mesh>(null);
+  const shaderMaterialRef = useRef<THREE.ShaderMaterial>(null);
 
-  const sunTexture = useMemo(() => createSunTexture(), []);
+  const activePlanetId = useUniverseStore((s) => s.activePlanetId);
+  const setActivePlanet = useUniverseStore((s) => s.setActivePlanet);
+  const isCompleted = useUniverseStore((s) => s.completedChallenges['kernel']);
+
+  const isCurrentFocus = activePlanetId === 'kernel';
+
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uColorCore: { value: new THREE.Color('#FFF4DC') },
+    uColorMid: { value: new THREE.Color('#FF5A36') }, // Vermilion transition
+    uColorRim: { value: new THREE.Color('#7A1800') },
+    uLimbCoeffs: { value: new THREE.Vector2(0.42, 0.38) },
+  }), []);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-    if (coreRef.current) {
-      coreRef.current.rotation.y = t * 0.04;
+    if (shaderMaterialRef.current) {
+      shaderMaterialRef.current.uniforms.uTime.value = t;
+    }
+    if (meshRef.current) {
+      meshRef.current.rotation.y = t * 0.04;
     }
     if (coronaRef.current) {
       coronaRef.current.rotation.y = -t * 0.02;
-      coronaRef.current.rotation.z = t * 0.015;
-      const pulse = 1 + Math.sin(t * 1.8) * 0.035;
+      const pulse = 1 + Math.sin(t * 1.6) * 0.025;
       coronaRef.current.scale.set(pulse, pulse, pulse);
     }
   });
@@ -32,20 +46,18 @@ export const Sun = () => {
     <group position={[0, 0, 0]}>
       {/* Omni-directional solar light */}
       <pointLight
-        ref={lightRef}
-        intensity={400}
-        distance={300}
+        intensity={280}
+        distance={280}
         decay={1.8}
-        color="#fffaf0"
+        color="#FFF6DE"
       />
-      <ambientLight intensity={0.18} />
 
-      {/* Main Core Mesh with Procedural Convection Surface */}
+      {/* Main Core Mesh with GLSL Limb-Darkened Convection Shader */}
       <mesh
-        ref={coreRef}
+        ref={meshRef}
         onClick={(e) => {
           e.stopPropagation();
-          setActivePlanet(null);
+          setActivePlanet('kernel');
         }}
         onPointerOver={() => {
           document.body.style.cursor = 'pointer';
@@ -55,43 +67,60 @@ export const Sun = () => {
           document.body.style.cursor = 'default';
         }}
       >
-        <sphereGeometry args={[4.4, 48, 48]} />
-        <meshBasicMaterial map={sunTexture} />
+        <sphereGeometry args={[4.2, 64, 64]} />
+        <shaderMaterial
+          ref={shaderMaterialRef}
+          vertexShader={SunShader.vertexShader}
+          fragmentShader={SunShader.fragmentShader}
+          uniforms={uniforms}
+        />
       </mesh>
 
-      {/* Inner Coronal Atmosphere */}
+      {/* Inner Coronal Halo */}
       <mesh ref={coronaRef}>
-        <sphereGeometry args={[4.9, 36, 36]} />
+        <sphereGeometry args={[4.7, 36, 36]} />
         <meshBasicMaterial
-          color="#ff7a00"
+          color="#FF5A36"
           transparent
-          opacity={0.38}
+          opacity={0.16}
           depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Outer Solar Flare Halo */}
-      <mesh>
-        <sphereGeometry args={[5.9, 32, 32]} />
-        <meshBasicMaterial
-          color="#ff3b00"
-          transparent
-          opacity={0.12}
-          depthWrite={false}
-        />
-      </mesh>
+      {/* Domain Metaphor: Ring of scheduled CPU process-dots */}
+      <ProcessDotsRing starRadius={4.2} />
 
-      {/* Clean, Non-AI Human-Crafted Center Tag */}
-      {!activePlanetId && (
-        <Html position={[0, 6.6, 0]} center distanceFactor={45} zIndexRange={[10, 0]}>
+      {/* Diegetic Surveyor Reticle Tag */}
+      {(!activePlanetId || isCurrentFocus) && (
+        <Html position={[0, 6.2, 0]} center distanceFactor={42} zIndexRange={[15, 0]}>
           <div
-            onClick={() => setActivePlanet(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePlanet('kernel');
+            }}
             className="cursor-pointer group flex flex-col items-center select-none"
           >
-            <div className="px-3.5 py-1.5 bg-amber-950/85 border border-amber-400/50 rounded-xl text-xs font-display tracking-wider text-amber-100 backdrop-blur-xl shadow-xl shadow-amber-950/60 group-hover:border-amber-300 transition-colors">
-              The Kernel <span className="text-amber-300 font-tech text-xs ml-1 tracking-wider uppercase">Central Star</span>
+            <div
+              className={`px-3 py-1 rounded-[2px] text-xs font-mono tracking-wider border flex items-center gap-2 transition-all ${
+                isCurrentFocus
+                  ? 'bg-[#0A0B0F] text-[#E8E3D6] border-[#FF5A36]'
+                  : 'bg-[#0A0B0F]/90 text-[#E8E3D6]/85 border-bone/20 hover:border-bone/50'
+              }`}
+            >
+              {isCompleted && (
+                <Check className="w-3 h-3 text-[#FF5A36] flex-shrink-0" />
+              )}
+              <span className="font-serif text-sm text-[#E8E3D6]">The Kernel</span>
+              <span className="text-[10px] text-[#FF5A36] font-mono tracking-wider pl-1">
+                OBS-00
+              </span>
             </div>
-            <div className="w-[1px] h-3.5 bg-amber-500/40" />
+            <div
+              className={`w-[1px] h-3 transition-colors ${
+                isCurrentFocus ? 'bg-[#FF5A36]' : 'bg-bone/20'
+              }`}
+            />
           </div>
         </Html>
       )}
