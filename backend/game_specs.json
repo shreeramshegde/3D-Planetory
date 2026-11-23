@@ -1,0 +1,44 @@
+{
+  "scheduler": {
+    "domainId": "kernel",
+    "parScore": 500,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 4.0,
+    "maxInputsPerSecond": 25
+  },
+  "packet-rain": {
+    "domainId": "cloud",
+    "parScore": 450,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 4.0,
+    "maxInputsPerSecond": 25
+  },
+  "loss-landscape": {
+    "domainId": "ai",
+    "parScore": 550,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 3.0,
+    "maxInputsPerSecond": 30
+  },
+  "split-brain": {
+    "domainId": "backend",
+    "parScore": 500,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 5.0,
+    "maxInputsPerSecond": 20
+  },
+  "pixel-pipeline": {
+    "domainId": "frontend",
+    "parScore": 500,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 4.0,
+    "maxInputsPerSecond": 25
+  },
+  "timing-oracle": {
+    "domainId": "security",
+    "parScore": 600,
+    "maxScoreCeiling": 1200,
+    "minDurationSeconds": 3.5,
+    "maxInputsPerSecond": 30
+  }
+}

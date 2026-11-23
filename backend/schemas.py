@@ -20,7 +20,11 @@ class ChallengeVerifyRequest(BaseModel):
     pilot_callsign: str
     domain_id: str
     challenge_id: str
-    payload: Dict[str, Any]
+    seed: Optional[int] = 0
+    input_log: Optional[List[Dict[str, Any]]] = None
+    claimed_score: Optional[int] = 0
+    duration_seconds: Optional[float] = 0.0
+    payload: Optional[Dict[str, Any]] = None
 
 class ChallengeVerifyResponse(BaseModel):
     is_valid: bool
@@ -40,5 +44,5 @@ class SystemTelemetry(BaseModel):
     name: str = "Kepler: DevCosmos Backend Gateway"
     version: str = "1.0.0"
     status: str = "operational"
-    total_domains: int = 5
+    total_domains: int = 6
     database_driver: str
