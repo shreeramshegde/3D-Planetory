@@ -10,14 +10,15 @@ export const PlanetSelector = () => {
   const completedChallenges = useUniverseStore((s) => s.completedChallenges);
 
   return (
-    <motion.nav
-      layout
-      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-      className={`fixed bottom-5 z-20 pointer-events-auto hardware-composite font-mono text-xs transition-all duration-300 ${
-        activePlanetId
-          ? 'left-5 xl:left-6'
-          : 'left-1/2 -translate-x-1/2'
-      }`}
+    <nav
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        left: activePlanetId ? 24 : '50%',
+        transform: activePlanetId ? 'none' : 'translateX(-50%)',
+        transition: 'left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+      }}
+      className="z-20 pointer-events-auto hardware-composite font-mono text-xs"
     >
       <div className="bg-[#0A0B0F] border border-bone-hairline px-2 py-1.5 flex items-center gap-1 shadow-2xl surveyor-corners">
         {/* All 6 Celestial Worlds */}
@@ -50,6 +51,6 @@ export const PlanetSelector = () => {
           );
         })}
       </div>
-    </motion.nav>
+    </nav>
   );
 };

@@ -29,7 +29,7 @@ export const Header = ({ onToggleTableView }: HeaderProps) => {
             Kepler Surveyor
           </span>
           <span className="font-mono text-[11px] text-bone-faint tabular-nums tracking-wider uppercase">
-            Atlas No. 84 / Epoch 2046
+            Atlas No. 84 · Epoch 2046
           </span>
         </button>
 

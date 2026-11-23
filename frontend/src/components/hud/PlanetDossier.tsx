@@ -68,7 +68,8 @@ export const PlanetDossier = () => {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 60, opacity: 0 }}
         transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-        className="fixed right-5 xl:right-6 top-16 bottom-5 w-[380px] xl:w-[420px] max-w-[calc(100vw-2.5rem)] z-20 pointer-events-auto flex flex-col bg-[#0E1017] border border-bone-hairline shadow-2xl surveyor-corners font-sans overflow-hidden"
+        style={{ position: 'fixed', right: 24, top: 64, bottom: 24 }}
+        className="w-[400px] xl:w-[440px] max-w-[calc(100vw-3rem)] z-30 pointer-events-auto flex flex-col bg-[#0E1017] border border-bone-hairline shadow-2xl surveyor-corners font-sans overflow-hidden"
       >
         {/* Ledger Header */}
         <div className="p-4 border-b border-bone-hairline flex items-start justify-between flex-shrink-0 bg-[#0A0B0F]">
