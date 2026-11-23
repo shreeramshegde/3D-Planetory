@@ -1,5 +1,5 @@
 import { useUniverseStore } from '../../store/useUniverseStore';
-import { Volume2, VolumeX, RotateCcw, Compass, Activity, Award } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, Compass, Activity, Award, Orbit } from 'lucide-react';
 
 export const Header = () => {
   const systemHarmony = useUniverseStore((s) => s.systemHarmony);
@@ -15,27 +15,33 @@ export const Header = () => {
 
   return (
     <header className="absolute top-0 left-0 right-0 z-30 p-4 pointer-events-none flex items-start justify-between">
-      {/* Brand & Narrative Title */}
+      {/* Brand & Technical Title */}
       <div className="pointer-events-auto flex items-center gap-3">
         <button
           onClick={() => setActivePlanet(null)}
-          className="flex items-center gap-3 p-2.5 rounded-lg glass-panel hover:border-cyan-400/50 transition-all group"
+          className="flex items-center gap-3 p-2.5 rounded-lg glass-panel hover:border-cyan-400/40 transition-all group"
         >
-          <div className="w-8 h-8 rounded bg-cyan-950/80 border border-cyan-500/50 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-transform">
             <Compass className="w-5 h-5 animate-spin-slow" />
           </div>
           <div className="text-left font-mono">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm tracking-widest text-slate-100">
-                KEPLER: DEVCOSMOS
+                KEPLER DEVCOSMOS
               </span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
             </div>
-            <p className="text-[10px] text-cyan-400/80 tracking-wider">
-              3D TECHNICAL UNIVERSE // SYSTEM ONLINE
+            <p className="text-[10px] text-slate-400 tracking-wider">
+              Interactive 3D Technical Domains
             </p>
           </div>
         </button>
+
+        {/* 3D Navigation Guide Tip */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg glass-panel text-[11px] font-mono text-slate-400 border border-slate-800">
+          <Orbit className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Drag: 360° Free Orbit · Scroll: Zoom · Click: Focus Domain</span>
+        </div>
       </div>
 
       {/* Center Telemetry & Harmony Meter */}
@@ -50,7 +56,7 @@ export const Header = () => {
           <div className="flex items-center gap-1 text-slate-300">
             <Award className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-[11px] text-slate-400">CALIBRATED:</span>
-            <span className="font-bold text-amber-300">{completedCount}/5</span>
+            <span className="font-bold text-amber-300">{completedCount} / 5</span>
           </div>
         </div>
 
@@ -67,7 +73,7 @@ export const Header = () => {
       <div className="pointer-events-auto flex items-center gap-2 font-mono text-xs">
         {/* Orbit Speed Controller */}
         <div className="glass-panel px-3 py-1.5 rounded-lg flex items-center gap-2 border border-slate-800">
-          <span className="text-[10px] text-slate-400">SPEED</span>
+          <span className="text-[10px] text-slate-400">ORBIT SPEED</span>
           <input
             type="range"
             min="0.2"
@@ -91,7 +97,7 @@ export const Header = () => {
               ? 'text-cyan-400 border-cyan-500/40 hover:bg-cyan-950/40'
               : 'text-slate-500 border-slate-800 hover:text-slate-300'
           }`}
-          title={isAudioMuted ? 'Enable synthesized soundscape' : 'Mute soundscape'}
+          title={isAudioMuted ? 'Enable procedural audio' : 'Mute procedural audio'}
         >
           {!isAudioMuted ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
         </button>

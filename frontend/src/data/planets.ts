@@ -1,169 +1,184 @@
 import { PlanetConfig } from '../types/universe';
 
-export const PLANETS: PlanetConfig[] = [
+export interface ExtendedPlanetConfig extends PlanetConfig {
+  axialTilt: number; // in radians
+  inclination: number; // orbital tilt in radians
+}
+
+export const PLANETS: ExtendedPlanetConfig[] = [
   {
     id: 'cloud',
     name: 'Stratos-9',
     domain: 'Cloud Architecture & DevOps',
-    color: '#00f5ff', // Cyan
-    secondaryColor: '#0077b6',
+    color: '#0284c7', // Cyan / Deep Ocean
+    secondaryColor: '#0369a1',
     atmosphereColor: '#38bdf8',
-    orbitRadius: 18,
+    orbitRadius: 20,
     orbitSpeed: 0.22,
-    rotationSpeed: 0.015,
-    size: 2.1,
+    rotationSpeed: 0.012,
+    size: 2.3,
+    axialTilt: 0.38,
+    inclination: 0.04,
     hasRings: true,
-    ringInnerRadius: 2.7,
-    ringOuterRadius: 4.2,
+    ringInnerRadius: 3.0,
+    ringOuterRadius: 4.6,
     ringColor: '#38bdf8',
     moons: [
-      { name: 'Pod-Alpha', size: 0.45, distance: 4.8, speed: 0.8, color: '#67e8f9' },
-      { name: 'Cluster-Beta', size: 0.35, distance: 6.0, speed: 0.5, color: '#a5f3fc' }
+      { name: 'Pod Alpha', size: 0.42, distance: 5.2, speed: 0.7, color: '#bae6fd' },
+      { name: 'Cluster Beta', size: 0.32, distance: 6.4, speed: 0.45, color: '#e0f2fe' }
     ],
-    tagline: 'The Infinite Infrastructure Nebula',
-    description: 'A tempestuous gas world wrapped in containerized orbital rings. Stratos-9 powers zero-downtime microservice galaxies through immutable infrastructure-as-code and self-healing cluster meshes.',
+    tagline: 'High-availability container mesh and declarative infrastructure',
+    description: 'Stratos-9 exemplifies elastic, zero-downtime distributed systems. Its atmospheric layers represent multi-region clusters orchestrated via automated control loops and self-healing deployments.',
     keyPillars: [
-      { title: 'Kubernetes Orchestration', desc: 'Declarative workload autoscaling, ingress routing, and service mesh discovery.' },
-      { title: 'Immutable IaC', desc: 'Reproducible multi-region topology provisioned via Terraform and OpenTofu.' },
-      { title: 'Observability & SRE', desc: 'Distributed tracing (OpenTelemetry), Prometheus metrics, and automated canary rollbacks.' }
+      { title: 'Declarative Orchestration', desc: 'Kubernetes controllers reconcile desired vs actual state with zero operator overhead.' },
+      { title: 'Infrastructure as Code', desc: 'Reproducible immutable topologies provisioned across hybrid zones.' },
+      { title: 'Telemetry & SRE', desc: 'Distributed tracing, SLI/SLO threshold alerting, and automated canary rollbacks.' }
     ],
-    techStack: ['Kubernetes', 'Docker', 'Terraform', 'AWS / GCP', 'ArgoCD', 'Prometheus', 'Envoy'],
+    techStack: ['Kubernetes', 'Docker', 'Terraform', 'OpenTelemetry', 'ArgoCD', 'Envoy'],
     challenge: {
-      id: 'pipeline-orchestrator',
-      title: 'Pipeline Orchestrator',
-      instruction: 'A cosmic radiation surge severed the CI/CD pipeline! Sequence the release stages in correct dependency order to prevent deployment outage.',
+      id: 'traffic-router',
+      title: 'Cluster Traffic Router',
+      instruction: 'Route incoming packet streams through network switches to target pods while isolating malicious requests before cluster health drops.',
       difficulty: 'Novice',
       rewardXP: 250,
-      objective: 'Arrange 5 pipeline stages into valid deployment sequence.'
+      objective: 'Route 12 valid requests and sink 4 threat packets.'
     }
   },
   {
     id: 'ai',
     name: 'Synthetix',
-    domain: 'AI, Machine Learning & Neural Systems',
-    color: '#a855f7', // Violet
-    secondaryColor: '#6b21a8',
+    domain: 'Machine Learning & Neural Systems',
+    color: '#7e22ce', // Deep Purple
+    secondaryColor: '#581c87',
     atmosphereColor: '#c084fc',
-    orbitRadius: 27,
+    orbitRadius: 30,
     orbitSpeed: 0.16,
-    rotationSpeed: 0.01,
-    size: 2.6,
+    rotationSpeed: 0.009,
+    size: 2.7,
+    axialTilt: 0.18,
+    inclination: -0.03,
     moons: [
-      { name: 'Attention-Head', size: 0.5, distance: 4.5, speed: 0.7, color: '#e9d5ff' }
+      { name: 'Attention Node', size: 0.5, distance: 4.8, speed: 0.6, color: '#f3e8ff' }
     ],
-    tagline: 'The Latent Space Singularity',
-    description: 'A deep bioluminescent world pulsating with synaptic tensor networks. Energy flows through multi-dimensional latent manifolds, continuously training foundation models on cosmic data streams.',
+    tagline: 'High-dimensional latent manifolds and gradient optimization',
+    description: 'Synthetix models continuous representation spaces. Its neural synaptic surface continuously transforms unstructured data streams into dense embeddings for inference and pattern extraction.',
     keyPillars: [
-      { title: 'Transformer Architectures', desc: 'Self-attention mechanisms, causal language modeling, and sparse mixture of experts.' },
-      { title: 'Vector Retrieval & RAG', desc: 'High-dimensional embeddings indexed with HNSW and approximate nearest neighbor search.' },
-      { title: 'Gradient Optimization', desc: 'Adaptive learning schedules (AdamW), backpropagation, and loss minimization.' }
+      { title: 'Transformer Architectures', desc: 'Scaled dot-product attention and multi-head projection layers.' },
+      { title: 'Vector Retrieval Systems', desc: 'Approximate nearest neighbor search on high-dimensional manifolds.' },
+      { title: 'Loss Convergence', desc: 'Gradient descent optimization with adaptive momentum and weight decay.' }
     ],
-    techStack: ['PyTorch', 'Hugging Face', 'Transformers', 'Qdrant / Milvus', 'LangChain', 'CUDA', 'vLLM'],
+    techStack: ['PyTorch', 'Transformers', 'Qdrant', 'CUDA', 'vLLM', 'Hugging Face'],
     challenge: {
-      id: 'neural-weight-tuner',
-      title: 'Neural Weight Tuner',
-      instruction: 'The planetary neural network is experiencing catastrophic overfitting! Calibrate the Learning Rate and Regularization to achieve >90% validation accuracy.',
+      id: 'perceptron-classifier',
+      title: 'Dynamic Perceptron Sorter',
+      instruction: 'Manually orient the classification hyperplane in real-time to partition streaming data clusters with at least 90% accuracy.',
       difficulty: 'Advanced',
       rewardXP: 350,
-      objective: 'Tune hyperparameters to minimize validation loss without underfitting.'
+      objective: 'Classify 20 data points with accuracy above 90%.'
     }
   },
   {
     id: 'backend',
     name: 'Kronos Prime',
-    domain: 'Distributed Systems & High-Throughput Backend',
-    color: '#f59e0b', // Amber/Magma
-    secondaryColor: '#b45309',
+    domain: 'Distributed Systems & Data Infrastructure',
+    color: '#d97706', // Obsidian Amber
+    secondaryColor: '#92400e',
     atmosphereColor: '#fbbf24',
-    orbitRadius: 36,
+    orbitRadius: 40,
     orbitSpeed: 0.11,
-    rotationSpeed: 0.012,
-    size: 2.8,
+    rotationSpeed: 0.014,
+    size: 2.9,
+    axialTilt: 0.44,
+    inclination: 0.05,
     hasRings: true,
-    ringInnerRadius: 3.5,
-    ringOuterRadius: 5.6,
+    ringInnerRadius: 3.6,
+    ringOuterRadius: 5.8,
     ringColor: '#f59e0b',
     moons: [
-      { name: 'Shard-01', size: 0.55, distance: 6.8, speed: 0.6, color: '#fde68a' },
-      { name: 'Replica-02', size: 0.4, distance: 8.2, speed: 0.4, color: '#fef3c7' }
+      { name: 'Shard 01', size: 0.52, distance: 7.0, speed: 0.55, color: '#fef3c7' },
+      { name: 'Replica 02', size: 0.38, distance: 8.5, speed: 0.35, color: '#fffbeb' }
     ],
-    tagline: 'The Fault-Tolerant Dynamo',
-    description: 'Forged from high-density magnetic magma, Kronos Prime orchestrates petabyte-scale transaction streams. Its core operates under Raft consensus, ensuring zero data loss across distributed shards.',
+    tagline: 'Fault-tolerant consensus and high-throughput streaming',
+    description: 'A dense geological core governed by distributed write-ahead logs and quorum voting. Kronos Prime handles sustained write pressure while maintaining linearizable consistency.',
     keyPillars: [
-      { title: 'Distributed Consensus', desc: 'Quorum-based replication, leader election, and atomic broadcast via Raft / Paxos.' },
-      { title: 'Event-Driven Streaming', desc: 'Partitioned write-ahead logs, backpressure handling, and exactly-once semantics in Kafka.' },
-      { title: 'Storage Engines & Sharding', desc: 'LSM-tree writes, B+ Tree indexes, and consistent hashing for partition elasticity.' }
+      { title: 'Quorum Consensus', desc: 'State machine replication via Raft and Paxos leader-follower agreements.' },
+      { title: 'Partition Resilience', desc: 'Consistent hashing with virtual nodes for dynamic cluster rebalancing.' },
+      { title: 'Storage Engines', desc: 'LSM-tree write optimization and write-ahead log persistence.' }
     ],
-    techStack: ['Go', 'Rust', 'PostgreSQL', 'Apache Kafka', 'Redis', 'gRPC', 'Cassandra'],
+    techStack: ['Go', 'Rust', 'PostgreSQL', 'Apache Kafka', 'Redis', 'gRPC'],
     challenge: {
-      id: 'load-balancer-matrix',
-      title: 'Load Balancer Matrix',
-      instruction: 'A tidal burst of incoming HTTP/gRPC requests is hitting the gateway! Route traffic efficiently across worker nodes to avoid server meltdown.',
+      id: 'queue-dispatcher',
+      title: 'Concurrency Queue Dispatcher',
+      instruction: 'Dispatch workers across read, write, and analytics shard queues to process transactions before buffer saturation causes deadlock.',
       difficulty: 'Expert',
       rewardXP: 450,
-      objective: 'Balance 3 worker node loads dynamically to prevent 504 timeouts.'
+      objective: 'Process 25 transactions without buffer overflow.'
     }
   },
   {
     id: 'frontend',
     name: 'Prisma',
-    domain: 'Creative Frontend & UX Engineering',
-    color: '#ec4899', // Pink/Prism
-    secondaryColor: '#831843',
+    domain: 'Interface Architecture & Creative Web Graphics',
+    color: '#db2777', // Magenta / Rose
+    secondaryColor: '#9d174d',
     atmosphereColor: '#f472b6',
-    orbitRadius: 45,
+    orbitRadius: 50,
     orbitSpeed: 0.08,
-    rotationSpeed: 0.02,
-    size: 2.2,
+    rotationSpeed: 0.018,
+    size: 2.4,
+    axialTilt: 0.22,
+    inclination: -0.06,
     moons: [
-      { name: 'Canvas-IO', size: 0.45, distance: 4.2, speed: 0.9, color: '#fbcfe8' }
+      { name: 'Raster', size: 0.44, distance: 4.4, speed: 0.8, color: '#fce7f3' }
     ],
-    tagline: 'The Crystalline Glass Interface',
-    description: 'A crystalline planet refracting photons into vivid spectrums of real-time shaders and fluid motion. Prisma represents the nexus of reactive DOM reconciliation, WebGL, and human-computer symbiosis.',
+    tagline: 'Hardware-accelerated rendering and reactive UI composition',
+    description: 'Prisma balances WebGL render pipelines, reactive component trees, and accessibility standards. Light passes through its crystalline structures to form responsive visual interfaces.',
     keyPillars: [
-      { title: 'Hardware-Accelerated WebGL/GPU', desc: 'Custom GLSL shaders, buffer geometries, and 60-120 FPS render loops.' },
-      { title: 'Reactive State Architecture', desc: 'Concurrent UI scheduling, fine-grained reactivity, and optimistic updates.' },
-      { title: 'Accessibility & Design Systems', desc: 'WCAG AAA contrast, semantic tree fidelity, and tokens-driven ergonomics.' }
+      { title: 'GPU Render Pipelines', desc: 'Shaders, scene-graph traversal, and 60-120 FPS rasterization loops.' },
+      { title: 'Reactivity & State Graphs', desc: 'Concurrent UI scheduling and selective sub-tree reconciliation.' },
+      { title: 'Design System Semantics', desc: 'Composable design tokens, layout ergonomics, and WCAG accessibility.' }
     ],
-    techStack: ['React', 'TypeScript', 'Three.js / WebGL', 'Tailwind CSS', 'Framer Motion', 'Web Workers', 'Vite'],
+    techStack: ['React', 'TypeScript', 'Three.js / WebGL', 'Tailwind CSS', 'Web Workers', 'Vite'],
     challenge: {
-      id: 'shader-resonance',
-      title: 'Shader & CSS Resonance',
-      instruction: 'The planetary refraction lens has fallen out of harmonic resonance! Tweak chromatic aberration, hue frequency, and pulse depth to align with the target waveform.',
+      id: 'blueprint-assembler',
+      title: 'Interface Blueprint Assembler',
+      instruction: 'Assemble semantic layout components into responsive interface wireframes under CSS layout rules.',
       difficulty: 'Advanced',
       rewardXP: 300,
-      objective: 'Harmonize visual shader parameters to match target telemetry.'
+      objective: 'Construct 3 target wireframe layouts.'
     }
   },
   {
     id: 'security',
     name: 'Citadel',
     domain: 'Cybersecurity, Cryptography & Defense',
-    color: '#10b981', // Emerald/Matrix
+    color: '#059669', // Emerald
     secondaryColor: '#064e3b',
     atmosphereColor: '#34d399',
-    orbitRadius: 54,
+    orbitRadius: 60,
     orbitSpeed: 0.06,
-    rotationSpeed: 0.008,
-    size: 2.4,
+    rotationSpeed: 0.007,
+    size: 2.5,
+    axialTilt: 0.12,
+    inclination: 0.02,
     moons: [
-      { name: 'Bastion-Key', size: 0.5, distance: 4.6, speed: 0.65, color: '#a7f3d0' }
+      { name: 'Sentinel Key', size: 0.48, distance: 4.8, speed: 0.6, color: '#d1fae5' }
     ],
-    tagline: 'The Cryptographic Stronghold',
-    description: 'Enclosed in an impenetrable hexagonal energy matrix, Citadel safeguards the system against anomalous zero-day vectors. Every transaction is authenticated via elliptic-curve cryptography and Zero Trust policies.',
+    tagline: 'Zero trust verification and cryptographic integrity',
+    description: 'Enclosed in ballistic titanium hexagonal matrices, Citadel enforces strict boundary protection. Every incoming signal is authenticated with mutual TLS and cryptographic attestation.',
     keyPillars: [
-      { title: 'Zero Trust Architecture', desc: 'Never trust, always verify: continuous mTLS authentication and least-privilege RBAC.' },
-      { title: 'Public-Key Cryptography', desc: 'Elliptic curve Diffie-Hellman, post-quantum lattice encryption, and PKI cert chains.' },
-      { title: 'Offensive & Defensive Security', desc: 'Threat modeling, side-channel attack mitigation, and automated SAST/DAST guards.' }
+      { title: 'Zero Trust Protocols', desc: 'Continuous identity verification with least-privilege role boundaries.' },
+      { title: 'Asymmetric Cryptography', desc: 'Elliptic curve key exchanges and tamper-evident cryptographic chains.' },
+      { title: 'Defensive Hardening', desc: 'Runtime syscall enforcement, memory safety, and automated vulnerability triage.' }
     ],
-    techStack: ['Rust / C', 'WireGuard', 'OpenSSL / libsodium', 'OAuth2 / OIDC', 'Falco', 'HashiCorp Vault', 'mTLS'],
+    techStack: ['Rust', 'WireGuard', 'OpenSSL / libsodium', 'OAuth2 / OIDC', 'mTLS', 'Vault'],
     challenge: {
-      id: 'cipher-protocol',
-      title: 'Cipher Protocol',
-      instruction: 'An anomalous signal has encrypted the defense telemetry! Rotate cryptographic cipher rings to align public and private keys before lockdown.',
+      id: 'breach-protocol',
+      title: 'Matrix Breach Protocol',
+      instruction: 'Locate and execute the hex sequence in the security matrix by alternating row and column hops before the timer runs out.',
       difficulty: 'Expert',
       rewardXP: 400,
-      objective: 'Align 3 concentric cipher rings to complete the SHA-256 handshake.'
+      objective: 'Extract the target sequence from the 5x5 hex matrix.'
     }
   }
 ];

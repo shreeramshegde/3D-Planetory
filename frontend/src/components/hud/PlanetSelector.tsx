@@ -1,7 +1,7 @@
 import { PLANETS } from '../../data/planets';
 import { useUniverseStore } from '../../store/useUniverseStore';
 import { soundEngine } from '../../audio/soundEngine';
-import { Sun, CheckCircle2 } from 'lucide-react';
+import { Sun, Check } from 'lucide-react';
 import { TechnicalDomainId } from '../../types/universe';
 
 export const PlanetSelector = () => {
@@ -11,7 +11,7 @@ export const PlanetSelector = () => {
 
   return (
     <nav className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
-      <div className="glass-panel px-3 py-2 rounded-2xl flex items-center gap-1.5 border border-cyan-500/20 shadow-2xl">
+      <div className="glass-panel px-3 py-2 rounded-2xl flex items-center gap-1.5 border border-slate-800 shadow-2xl">
         {/* Overview / Sun Button */}
         <button
           onClick={() => {
@@ -48,7 +48,6 @@ export const PlanetSelector = () => {
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
               }`}
             >
-              {/* Planetary color indicator dot */}
               <span
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{
@@ -59,7 +58,7 @@ export const PlanetSelector = () => {
               <span>{planet.name}</span>
 
               {isDone && (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
               )}
             </button>
           );

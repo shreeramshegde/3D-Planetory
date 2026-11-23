@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
@@ -8,60 +8,64 @@ import { PLANETS } from '../../data/planets';
 
 export const CameraController = () => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
-  const { camera } = useThree();
-
   const activePlanetId = useUniverseStore((s) => s.activePlanetId);
-  const cameraMode = useUniverseStore((s) => s.cameraMode);
+  const isTransitioningRef = useRef<boolean>(false);
+  const transitionProgressRef = useRef<number>(1);
 
-  // Default Macro Solar System viewpoint
-  const defaultTarget = useRef(new THREE.Vector3(0, 0, 0));
-  const defaultPosition = useRef(new THREE.Vector3(0, 65, 85));
+  const startCamPos = useRef(new THREE.Vector3());
+  const startTarget = useRef(new THREE.Vector3());
+  const endCamPos = useRef(new THREE.Vector3());
+  const endTarget = useRef(new THREE.Vector3());
 
-  // Current target positions for smooth interpolation
-  const currentTarget = useRef(new THREE.Vector3(0, 0, 0));
-  const currentCamPos = useRef(new THREE.Vector3(0, 65, 85));
+  // Default solar system viewpoint
+  const systemViewTarget = new THREE.Vector3(0, 0, 0);
+  const systemViewPosition = new THREE.Vector3(0, 50, 75);
 
-  // Handle resets or planet switching
   useEffect(() => {
-    if (!activePlanetId) {
-      currentTarget.current.copy(defaultTarget.current);
-      currentCamPos.current.copy(defaultPosition.current);
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    startCamPos.current.copy(controls.object.position);
+    startTarget.current.copy(controls.target);
+
+    if (activePlanetId) {
+      const planet = PLANETS.find((p) => p.id === activePlanetId);
+      if (planet) {
+        // Set target to planet's orbit distance
+        endTarget.current.set(planet.orbitRadius, 0, 0);
+        const viewDist = planet.size * 3.8;
+        endCamPos.current.set(
+          planet.orbitRadius + viewDist * 0.7,
+          viewDist * 0.5,
+          viewDist * 0.9
+        );
+      }
+    } else {
+      endTarget.current.copy(systemViewTarget);
+      endCamPos.current.copy(systemViewPosition);
     }
+
+    isTransitioningRef.current = true;
+    transitionProgressRef.current = 0;
   }, [activePlanetId]);
 
   useFrame((_, delta) => {
     const controls = controlsRef.current;
     if (!controls) return;
 
-    if (activePlanetId) {
-      // Find active planet
-      const planet = PLANETS.find((p) => p.id === activePlanetId);
-      if (planet) {
-        // Find planet's actual position in scene or compute based on angle
-        // We can inspect the scene for planet's group position or lerp to close orbit
-        const distance = planet.size * 3.4;
-        const targetPos = new THREE.Vector3(
-          planet.orbitRadius,
-          0,
-          0
-        );
+    // Smooth transition between planetary target and solar view
+    if (isTransitioningRef.current) {
+      transitionProgressRef.current += delta * 2.2;
+      const t = Math.min(1, transitionProgressRef.current);
+      // Smooth cubic ease out
+      const ease = 1 - Math.pow(1 - t, 3);
 
-        // Calculate smooth target tracking
-        currentTarget.current.lerp(targetPos, 4.0 * delta);
+      controls.object.position.lerpVectors(startCamPos.current, endCamPos.current, ease);
+      controls.target.lerpVectors(startTarget.current, endTarget.current, ease);
 
-        // Adjust camera offset relative to target
-        const offset = cameraMode === 'challenge'
-          ? new THREE.Vector3(0, distance * 0.8, distance * 1.5)
-          : new THREE.Vector3(distance * 0.7, distance * 0.9, distance * 1.8);
-
-        const desiredCamPos = currentTarget.current.clone().add(offset);
-        camera.position.lerp(desiredCamPos, 3.5 * delta);
-        controls.target.lerp(currentTarget.current, 4.0 * delta);
+      if (t >= 1) {
+        isTransitioningRef.current = false;
       }
-    } else {
-      // Macro System View
-      camera.position.lerp(defaultPosition.current, 2.5 * delta);
-      controls.target.lerp(defaultTarget.current, 3.0 * delta);
     }
 
     controls.update();
@@ -72,11 +76,16 @@ export const CameraController = () => {
       ref={controlsRef}
       enableDamping
       dampingFactor={0.06}
-      maxDistance={220}
-      minDistance={6}
-      maxPolarAngle={Math.PI / 2 + 0.05} // don't go too far below orbital plane
-      autoRotate={!activePlanetId}
-      autoRotateSpeed={0.25}
+      rotateSpeed={0.8}
+      zoomSpeed={1.1}
+      panSpeed={0.8}
+      minDistance={4}
+      maxDistance={280}
+      // Full 360-degree rotation freedom: allow viewing from poles, below, around (like a 3D car model)
+      minPolarAngle={0.05}
+      maxPolarAngle={Math.PI - 0.05}
+      autoRotate={!activePlanetId && !isTransitioningRef.current}
+      autoRotateSpeed={0.3}
     />
   );
 };
