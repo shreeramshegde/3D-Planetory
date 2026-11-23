@@ -1,8 +1,12 @@
 import { useUniverseStore } from '../../store/useUniverseStore';
-import { Volume2, VolumeX, RotateCcw } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, Table } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const Header = () => {
+interface HeaderProps {
+  onToggleTableView?: () => void;
+}
+
+export const Header = ({ onToggleTableView }: HeaderProps) => {
   const completedChallenges = useUniverseStore((s) => s.completedChallenges);
   const isAudioMuted = useUniverseStore((s) => s.isAudioMuted);
   const toggleAudio = useUniverseStore((s) => s.toggleAudio);
@@ -80,6 +84,20 @@ export const Header = () => {
         >
           {!isAudioMuted ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5 text-bone-faint" />}
         </motion.button>
+
+        {/* 2D Accessible Star Chart Toggle */}
+        {onToggleTableView && (
+          <motion.button
+            whileTap={{ scale: 0.94 }}
+            onClick={onToggleTableView}
+            className="px-2.5 py-1 rounded-sm border border-bone-hairline hover:border-vermilion text-bone-muted hover:text-bone text-[11px] font-mono transition-colors flex items-center gap-1.5 focus:outline-none"
+            title="Switch to 2D Accessible Star Chart"
+            aria-label="Switch to 2D Accessible Star Chart"
+          >
+            <Table className="w-3.5 h-3.5 text-vermilion" />
+            <span className="hidden md:inline">2D Atlas</span>
+          </motion.button>
+        )}
 
         {/* Reset Atlas */}
         <motion.button
