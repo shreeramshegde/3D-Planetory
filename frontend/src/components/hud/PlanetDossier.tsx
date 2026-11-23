@@ -3,11 +3,12 @@ import { useUniverseStore } from '../../store/useUniverseStore';
 import { PLANETS } from '../../data/planets';
 import { STORY_CHAPTERS } from '../../data/storylines';
 import { soundEngine } from '../../audio/soundEngine';
-import { ChaosClusterGame } from '../../challenges/ChaosClusterGame';
-import { GradientDescentGame } from '../../challenges/GradientDescentGame';
-import { RaftConsensusGame } from '../../challenges/RaftConsensusGame';
-import { RenderPipelineGame } from '../../challenges/RenderPipelineGame';
-import { ZeroTrustDefenseGame } from '../../challenges/ZeroTrustDefenseGame';
+import { SchedulerGame } from '../../challenges/SchedulerGame';
+import { PacketRainGame } from '../../challenges/PacketRainGame';
+import { LossLandscapeGame } from '../../challenges/LossLandscapeGame';
+import { SplitBrainGame } from '../../challenges/SplitBrainGame';
+import { PixelPipelineGame } from '../../challenges/PixelPipelineGame';
+import { TimingOracleGame } from '../../challenges/TimingOracleGame';
 import { X, ArrowRight, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -206,11 +207,12 @@ export const PlanetDossier = () => {
 
           {activeTab === 'sim' && (
             <div className="h-full flex flex-col">
-              {planet.id === 'cloud' && <ChaosClusterGame />}
-              {planet.id === 'ai' && <GradientDescentGame />}
-              {planet.id === 'backend' && <RaftConsensusGame />}
-              {planet.id === 'frontend' && <RenderPipelineGame />}
-              {planet.id === 'security' && <ZeroTrustDefenseGame />}
+              {planet.id === 'kernel' && <SchedulerGame />}
+              {planet.id === 'cloud' && <PacketRainGame />}
+              {planet.id === 'ai' && <LossLandscapeGame />}
+              {planet.id === 'backend' && <SplitBrainGame />}
+              {planet.id === 'frontend' && <PixelPipelineGame />}
+              {planet.id === 'security' && <TimingOracleGame />}
             </div>
           )}
 
