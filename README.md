@@ -6,23 +6,39 @@
 
 ---
 
-## Overview & Narrative
-Kepler: DevCosmos is an interactive 3D universe that models fundamental software engineering domains as celestial bodies in an explorable star system.
+## Storyline: The Architect's Odyssey
+Fifty years ago, humanity built the **DevCosmos**—a living celestial repository designed to preserve civilization's collective engineering intelligence across computing. It was not built by automated algorithms, but by millions of human hands: engineers debugging kernel panics by candlelight, researchers scribbling vector equations on cold whiteboard walls, sysadmins waking up to pager alerts at 3:00 AM, and interface designers who believed that computers should feel like an extension of human empathy.
 
-Users navigate the system in full 360-degree free orbit, inspect domain-specific architectural dossiers, and complete interactive domain mini-games to calibrate the system to 100% System Harmony.
+Then came **The Great Cascade**. Systems grew so vast and labyrinthine that no single human mind could hold the entire architecture. Technical silos formed. Teams stopped talking across domain boundaries. Documentation aged, dependencies rotted, and technical entropy crept into the celestial foundations.
+
+One by one, the planetary domains drifted out of alignment. You arrive aboard the exploration vessel as a **Systems Cartographer and Restorer**. Your charge is to visit each planetary society, read the human field records left by their architects, master their domain disciplines, and restore the DevCosmos to **100% System Harmony**.
 
 ---
 
-## The Celestial Domains
+## The Celestial Domains & Authentic Domain Games
 
-| Celestial Body | Technical Domain | Visual & Shader Design | Interactive Mini-Game |
+| Celestial Body | Technical Domain | Human Architect & Field Log | Interactive Domain Game |
 | :--- | :--- | :--- | :--- |
-| **The Kernel** (Sun) | **Core Computing Architecture** | Plasma core with animated convection surface and omni-directional lighting. | Macro system overview, free orbit controls, and celestial speed controller. |
-| **Stratos-9** | **Cloud Architecture & DevOps** | Cyan gas giant with atmospheric storm belts, orbital rings, and satellite container moons. | **Cluster Traffic Router**: Route packet streams through network switches to target pods while isolating threats. |
-| **Synthetix** | **Machine Learning & Neural Systems** | Violet world etched with glowing synaptic neural grids. | **Dynamic Perceptron Sorter**: Orient the classification hyperplane in real-time to partition latent clusters with >90% accuracy. |
-| **Kronos Prime** | **Distributed Systems & Backend** | Obsidian volcanic planet with molten data pipelines and clockwork magnetic rings. | **Concurrency Queue Dispatcher**: Process read, write, and streaming shard queues before buffer saturation causes deadlock. |
-| **Prisma** | **Interface Architecture & Web Graphics** | Crystalline prismatic world featuring light refraction and chromatic dispersion. | **Interface Blueprint Assembler**: Construct responsive interface trees by slotting semantic components into wireframes. |
-| **Citadel** | **Cybersecurity & Cryptography** | Monolithic dark sphere enclosed in a rotating translucent hexagonal energy matrix. | **Matrix Breach Protocol**: Locate and extract hex sequences in the security matrix by alternating row and column hops. |
+| **The Kernel** (Sun) | **Core Computing Architecture** | The Foundational Archive | Macro system overview, 360-degree free orbit controls, and speed controller. |
+| **Stratos-9** | **Cloud Architecture & DevOps** | Elena Vance: *"The Night the Cable Broke"* | **Chaos Cluster: 99.99% SLA Defense**: Survive multi-AZ Chaos Monkey strikes and 1,800 RPS DDoS surges. Scale replicas and cordon degraded nodes to maintain uptime &ge; 99.90%. |
+| **Synthetix** | **Machine Learning & Neural Systems** | Dr. Marcus Chen: *"Whispers in the Latent Void"* | **Gradient Descent & Adversarial Defense**: Train a deep neural network on a 2D non-convex loss contour. Deploy momentum to escape saddle points, clip exploding gradients, and toggle adversarial dropout to reach &ge; 96.0% accuracy. |
+| **Kronos Prime** | **Distributed Systems & Backend** | Tariq Al-Mansoor: *"The Unbroken Ledger"* | **Raft Consensus & Distributed Quorum**: Manage a 5-node cluster implementing Raft consensus. Handle network partitions, avoid split-brain hazards, elect majority leaders, and commit 15 WAL entries. |
+| **Prisma** | **Interface Architecture & Web Graphics** | Maya Lin: *"The Human Canvas"* | **16.6ms Render Pipeline: Zero-Jank**: Diagnose an application thrashing at 38ms. Batch DOM reads via requestAnimationFrame, promote to GPU composite layers, and apply CSS containment to hold solid 60 FPS (&le; 16.6ms). |
+| **Citadel** | **Cybersecurity & Cryptography** | Sarah Connor-Cruz: *"The Silent Watch"* | **Zero-Trust Defense: 3-Tier Handshake**: 3-tier active cryptographic defense. Align 4 asymmetric cipher rings, verify real-time HMAC SHA-256 TLS packet checksums, and compute Diffie-Hellman shared secrets before intrusion strikes. |
+
+---
+
+## Dual Experience Modes
+
+1. **In-Universe Holographic HUD**:
+   - Explore the 3D universe in unconstrained 360-degree free orbit (like an interactive 3D vehicle viewer).
+   - Click any world to focus the camera while maintaining full 360° orbital freedom around the planet.
+   - Slide out the holographic dossier to view architectural principles, read field transcripts, and run in-panel simulations.
+
+2. **Dedicated Fullscreen Arcade Terminal (`#/terminal/:domainId`)**:
+   - Click **"Run in Dedicated Fullscreen Tab"** or **"Open in New Tab"** to launch a full-screen battle station terminal in a separate browser tab.
+   - Includes real browser fullscreen toggle (`requestFullscreen()`), historical narrative transcripts, and large-format tactical game controls.
+   - Cross-tab state synchronization: winning a game in the new tab immediately updates the main 3D universe tab in real-time via `BroadcastChannel` and `localStorage`.
 
 ---
 
@@ -52,7 +68,7 @@ When ready to run the full-stack setup with the FastAPI gateway and PostgreSQL d
 ```bash
 docker compose up --build
 ```
-* **Frontend**: [http://localhost:3000](http://localhost:3000)
+* **Frontend UI**: [http://localhost:3000](http://localhost:3000)
 * **FastAPI Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 * **PostgreSQL Database**: Port `5432`
 
@@ -76,13 +92,13 @@ uvicorn main:app --reload --port 8000
 ### Frontend
 - **3D Graphics Engine**: Three.js, React Three Fiber, React Three Drei
 - **Camera Controls**: OrbitControls with unrestricted 360-degree rotation (polar & azimuth) and smooth damping
-- **Procedural Surface Textures**: Mathematical canvas-generated gas bands, neural grids, magma crusts, and hexagonal shields
+- **Procedural Surface Textures**: Mathematical canvas-generated gas bands, neural grids, magma crusts, crystal facets, and hexagonal shields
 - **Post-Processing**: Selective Bloom, ToneMapping, Vignette
 - **Audio Synthesizer**: Procedural Web Audio API sound engine
-- **UI Framework**: React 19, TypeScript, Vite, Tailwind CSS
-- **State Management**: Zustand with persistent storage
+- **UI Framework**: React 19, TypeScript, React Router, Vite, Tailwind CSS
+- **State Management**: Zustand with persistent storage and BroadcastChannel cross-tab synchronization
 
-### Backend (Extensible)
+### Backend
 - **API Framework**: FastAPI (Async Python)
 - **ORM / Database**: SQLAlchemy 2.0 (Async), PostgreSQL / SQLite fallback
 - **Validation**: Pydantic v2

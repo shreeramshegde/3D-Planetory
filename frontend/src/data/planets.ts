@@ -36,12 +36,12 @@ export const PLANETS: ExtendedPlanetConfig[] = [
     ],
     techStack: ['Kubernetes', 'Docker', 'Terraform', 'OpenTelemetry', 'ArgoCD', 'Envoy'],
     challenge: {
-      id: 'traffic-router',
-      title: 'Cluster Traffic Router',
-      instruction: 'Route incoming packet streams through network switches to target pods while isolating malicious requests before cluster health drops.',
-      difficulty: 'Novice',
+      id: 'chaos-cluster',
+      title: 'Chaos Cluster: 99.99% SLA Defense',
+      instruction: 'Survive Chaos Monkey node terminations and DDoS surges across 3 Availability Zones. Maintain uptime SLA above 99.90%.',
+      difficulty: 'Expert',
       rewardXP: 250,
-      objective: 'Route 12 valid requests and sink 4 threat packets.'
+      objective: 'Survive 40 seconds of multi-AZ chaos with uptime >= 99.90%.'
     }
   },
   {
@@ -69,12 +69,12 @@ export const PLANETS: ExtendedPlanetConfig[] = [
     ],
     techStack: ['PyTorch', 'Transformers', 'Qdrant', 'CUDA', 'vLLM', 'Hugging Face'],
     challenge: {
-      id: 'perceptron-classifier',
-      title: 'Dynamic Perceptron Sorter',
-      instruction: 'Manually orient the classification hyperplane in real-time to partition streaming data clusters with at least 90% accuracy.',
-      difficulty: 'Advanced',
+      id: 'gradient-descent',
+      title: 'Gradient Descent & Adversarial Defense',
+      instruction: 'Optimize a deep neural network across non-convex loss contour surfaces. Overcome saddle point traps, gradient explosions, and adversarial FGSM attacks.',
+      difficulty: 'Expert',
       rewardXP: 350,
-      objective: 'Classify 20 data points with accuracy above 90%.'
+      objective: 'Achieve >= 96.0% test accuracy and loss < 0.08.'
     }
   },
   {
@@ -107,12 +107,12 @@ export const PLANETS: ExtendedPlanetConfig[] = [
     ],
     techStack: ['Go', 'Rust', 'PostgreSQL', 'Apache Kafka', 'Redis', 'gRPC'],
     challenge: {
-      id: 'queue-dispatcher',
-      title: 'Concurrency Queue Dispatcher',
-      instruction: 'Dispatch workers across read, write, and analytics shard queues to process transactions before buffer saturation causes deadlock.',
+      id: 'raft-consensus',
+      title: 'Raft Consensus & Distributed Quorum',
+      instruction: 'Control a 5-node Raft cluster through network partitions and election timeouts. Avoid split-brain divergence and commit WAL logs across majority quorums.',
       difficulty: 'Expert',
       rewardXP: 450,
-      objective: 'Process 25 transactions without buffer overflow.'
+      objective: 'Commit 15 WAL log entries across quorum majority.'
     }
   },
   {
@@ -140,12 +140,12 @@ export const PLANETS: ExtendedPlanetConfig[] = [
     ],
     techStack: ['React', 'TypeScript', 'Three.js / WebGL', 'Tailwind CSS', 'Web Workers', 'Vite'],
     challenge: {
-      id: 'blueprint-assembler',
-      title: 'Interface Blueprint Assembler',
-      instruction: 'Assemble semantic layout components into responsive interface wireframes under CSS layout rules.',
-      difficulty: 'Advanced',
+      id: 'render-pipeline',
+      title: '16.6ms Render Pipeline: Zero-Jank',
+      instruction: 'Diagnose and resolve forced synchronous reflows, CPU paint bottlenecks, and main thread blockers to sustain 60 FPS (<= 16.6ms).',
+      difficulty: 'Expert',
       rewardXP: 300,
-      objective: 'Construct 3 target wireframe layouts.'
+      objective: 'Maintain solid 60 FPS (<= 16.6ms) across 15s benchmark.'
     }
   },
   {
@@ -173,12 +173,12 @@ export const PLANETS: ExtendedPlanetConfig[] = [
     ],
     techStack: ['Rust', 'WireGuard', 'OpenSSL / libsodium', 'OAuth2 / OIDC', 'mTLS', 'Vault'],
     challenge: {
-      id: 'breach-protocol',
-      title: 'Matrix Breach Protocol',
-      instruction: 'Locate and execute the hex sequence in the security matrix by alternating row and column hops before the timer runs out.',
+      id: 'zero-trust',
+      title: 'Zero-Trust Defense: 3-Tier Handshake',
+      instruction: 'Authenticate asymmetric key rings, inspect live HMAC SHA-256 packet signatures, and derive Diffie-Hellman shared secrets before intrusion strikes.',
       difficulty: 'Expert',
       rewardXP: 400,
-      objective: 'Extract the target sequence from the 5x5 hex matrix.'
+      objective: 'Authenticate all 3 cryptographic tiers with zero breaches.'
     }
   }
 ];
