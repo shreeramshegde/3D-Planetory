@@ -20,7 +20,7 @@ export const IntroOverlay = () => {
             <div className="flex items-center gap-2">
               <Compass className="w-3.5 h-3.5 text-vermilion" />
               <span className="text-bone">OBSERVATORY ARCHIVE</span>
-              <span className="text-bone-faint">// SECTOR 07 ATLAS</span>
+              <span className="text-bone-faint">· SECTOR 07 ATLAS</span>
             </div>
             <span className="text-bone-faint tabular-nums">RA 18h 36m 56s | DEC +38° 47′ 01″</span>
           </div>

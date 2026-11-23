@@ -67,15 +67,15 @@ export const PlanetDossier = () => {
         initial={{ x: 60, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 60, opacity: 0 }}
-        transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-        className="fixed right-6 top-18 bottom-6 w-[440px] max-w-[calc(100vw-3rem)] z-20 pointer-events-auto flex flex-col bg-[#111319] border border-bone-hairline shadow-2xl surveyor-corners font-sans"
+        transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+        className="fixed right-5 xl:right-6 top-16 bottom-5 w-[380px] xl:w-[420px] max-w-[calc(100vw-2.5rem)] z-20 pointer-events-auto flex flex-col bg-[#0E1017] border border-bone-hairline shadow-2xl surveyor-corners font-sans overflow-hidden"
       >
         {/* Ledger Header */}
-        <div className="p-4 border-b border-bone-hairline flex items-start justify-between">
+        <div className="p-4 border-b border-bone-hairline flex items-start justify-between flex-shrink-0 bg-[#0A0B0F]">
           <div className="space-y-1">
             <div className="flex items-center gap-2 font-mono text-[11px] text-bone-faint tabular-nums tracking-wider uppercase">
               <span>{planet.catalogId}</span>
-              <span>/</span>
+              <span>·</span>
               <span>R={planet.orbitRadius} AU</span>
               {isPlotted && (
                 <span className="text-vermilion font-medium">PLOTTED</span>
@@ -100,7 +100,7 @@ export const PlanetDossier = () => {
         </div>
 
         {/* Tab Selector */}
-        <div className="grid grid-cols-3 border-b border-bone-hairline font-mono text-xs text-center">
+        <div className="grid grid-cols-3 border-b border-bone-hairline font-mono text-xs text-center flex-shrink-0 bg-[#0A0B0F]">
           <button
             onClick={() => handleTabChange('dossier')}
             className={`py-2 transition-colors ${
@@ -134,7 +134,7 @@ export const PlanetDossier = () => {
         </div>
 
         {/* Dedicated Tab Action Bar */}
-        <div className="px-4 py-1.5 border-b border-bone-hairline bg-[#0A0B0F] flex items-center justify-between font-mono text-[11px] text-bone-muted">
+        <div className="px-4 py-1.5 border-b border-bone-hairline bg-[#0A0B0F] flex items-center justify-between font-mono text-[11px] text-bone-muted flex-shrink-0">
           <span>SURVEYOR TERMINAL</span>
           <button
             onClick={openDedicatedTab}
@@ -233,7 +233,7 @@ export const PlanetDossier = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-bone-hairline bg-[#0A0B0F] flex items-center justify-between font-mono text-[11px] text-bone-faint">
+        <div className="p-3 border-t border-bone-hairline bg-[#0A0B0F] flex items-center justify-between font-mono text-[11px] text-bone-faint flex-shrink-0">
           <span>SURVEY STATUS: {isPlotted ? 'VERIFIED' : 'PENDING'}</span>
           <button
             onClick={() => setActivePlanet(null)}

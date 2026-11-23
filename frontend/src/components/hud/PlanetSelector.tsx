@@ -10,7 +10,15 @@ export const PlanetSelector = () => {
   const completedChallenges = useUniverseStore((s) => s.completedChallenges);
 
   return (
-    <nav className="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto hardware-composite font-mono text-xs">
+    <motion.nav
+      layout
+      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+      className={`fixed bottom-5 z-20 pointer-events-auto hardware-composite font-mono text-xs transition-all duration-300 ${
+        activePlanetId
+          ? 'left-5 xl:left-6'
+          : 'left-1/2 -translate-x-1/2'
+      }`}
+    >
       <div className="bg-[#0A0B0F] border border-bone-hairline px-2 py-1.5 flex items-center gap-1 shadow-2xl surveyor-corners">
         {/* All 6 Celestial Worlds */}
         {PLANETS.map((planet) => {
@@ -42,6 +50,6 @@ export const PlanetSelector = () => {
           );
         })}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
