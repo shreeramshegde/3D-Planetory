@@ -7,6 +7,7 @@ import { Planet } from './Planet';
 import { AsteroidBelt } from './AsteroidBelt';
 import { Starfield } from './Starfield';
 import { CameraController } from './CameraController';
+import { ConstellationLines } from './ConstellationLines';
 import { PLANETS } from '../../data/planets';
 
 export const UniverseCanvas = () => {
@@ -41,6 +42,9 @@ export const UniverseCanvas = () => {
 
         {/* Central Star: The Kernel (OBS-00) */}
         <Sun />
+
+        {/* Dynamic Star Atlas Constellation Lines */}
+        <ConstellationLines />
 
         {/* All Technical Domain Worlds */}
         {PLANETS.map((planet) => (
