@@ -1,7 +1,8 @@
 // Optional REST Client with autonomous offline fallback
 // Allows seamless integration with FastAPI without breaking offline/standalone usage
 
-const API_BASE = 'http://localhost:8000/api/v1';
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+const API_BASE = `${BACKEND_URL}/api/v1`;
 
 export interface LeaderboardPilot {
   rank: number;
@@ -14,7 +15,7 @@ export interface LeaderboardPilot {
 export const api = {
   async checkBackendHealth(): Promise<boolean> {
     try {
-      const res = await fetch('http://localhost:8000/', { signal: AbortSignal.timeout(1500) });
+      const res = await fetch(`${BACKEND_URL}/`, { signal: AbortSignal.timeout(1500) });
       return res.ok;
     } catch {
       return false;
