@@ -3,9 +3,8 @@ import { persist } from 'zustand/middleware';
 import { UniverseStore, TechnicalDomainId, CameraMode } from '../types/universe';
 import { soundEngine } from '../audio/soundEngine';
 
-const TOTAL_PLANETS = 5;
+const TOTAL_BODIES = 6;
 
-// BroadcastChannel for instant cross-tab synchronization
 let syncChannel: BroadcastChannel | null = null;
 if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
   syncChannel = new BroadcastChannel('kepler-cosmos-sync');
@@ -14,7 +13,6 @@ if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
 export const useUniverseStore = create<UniverseStore>()(
   persist(
     (set, get) => {
-      // Listen for updates from other tabs (e.g. when playing in a dedicated tab)
       if (typeof window !== 'undefined') {
         if (syncChannel) {
           syncChannel.onmessage = (event) => {
@@ -24,22 +22,25 @@ export const useUniverseStore = create<UniverseStore>()(
               if (!current[domainId]) {
                 soundEngine.playSuccess();
                 const newCompleted = { ...current, [domainId]: true };
-                const completedCount = Object.values(newCompleted).filter(Boolean).length;
-                const harmony = Math.round((completedCount / TOTAL_PLANETS) * 100);
+                const count = Object.values(newCompleted).filter(Boolean).length;
+                const harmony = Math.round((count / TOTAL_BODIES) * 100);
                 set({
                   completedChallenges: newCompleted,
+                  plottedCount: count,
                   systemHarmony: harmony,
                 });
               }
             } else if (event.data?.type === 'RESET_UNIVERSE') {
               set({
                 completedChallenges: {
+                  kernel: false,
                   cloud: false,
                   ai: false,
                   backend: false,
                   frontend: false,
                   security: false,
                 },
+                plottedCount: 0,
                 systemHarmony: 0,
               });
             }
@@ -51,10 +52,11 @@ export const useUniverseStore = create<UniverseStore>()(
             try {
               const parsed = JSON.parse(e.newValue);
               if (parsed?.state?.completedChallenges) {
-                const completedCount = Object.values(parsed.state.completedChallenges).filter(Boolean).length;
+                const count = Object.values(parsed.state.completedChallenges).filter(Boolean).length;
                 set({
                   completedChallenges: parsed.state.completedChallenges,
-                  systemHarmony: Math.round((completedCount / TOTAL_PLANETS) * 100),
+                  plottedCount: count,
+                  systemHarmony: Math.round((count / TOTAL_BODIES) * 100),
                 });
               }
             } catch {
@@ -68,6 +70,7 @@ export const useUniverseStore = create<UniverseStore>()(
         activePlanetId: null,
         cameraMode: 'overview',
         completedChallenges: {
+          kernel: false,
           cloud: false,
           ai: false,
           backend: false,
@@ -78,7 +81,8 @@ export const useUniverseStore = create<UniverseStore>()(
         isAudioMuted: false,
         isControlsLocked: false,
         systemHarmony: 0,
-        pilotCallsign: 'ARCHITECT-01',
+        plottedCount: 0,
+        pilotCallsign: 'ARCHIVIST-01',
 
         setActivePlanet: (id: TechnicalDomainId | null) => {
           if (id) {
@@ -106,19 +110,20 @@ export const useUniverseStore = create<UniverseStore>()(
           if (!currentCompleted[id]) {
             soundEngine.playSuccess();
             const newCompleted = { ...currentCompleted, [id]: true };
-            const completedCount = Object.values(newCompleted).filter(Boolean).length;
-            const harmony = Math.round((completedCount / TOTAL_PLANETS) * 100);
+            const count = Object.values(newCompleted).filter(Boolean).length;
+            const harmony = Math.round((count / TOTAL_BODIES) * 100);
 
             set({
               completedChallenges: newCompleted,
+              plottedCount: count,
               systemHarmony: harmony,
             });
 
-            // Broadcast to other open tabs immediately
             if (syncChannel) {
               syncChannel.postMessage({
                 type: 'CHALLENGE_COMPLETED',
                 domainId: id,
+                plottedCount: count,
                 systemHarmony: harmony,
               });
             }
@@ -145,12 +150,14 @@ export const useUniverseStore = create<UniverseStore>()(
             activePlanetId: null,
             cameraMode: 'overview',
             completedChallenges: {
+              kernel: false,
               cloud: false,
               ai: false,
               backend: false,
               frontend: false,
               security: false,
             },
+            plottedCount: 0,
             systemHarmony: 0,
             orbitSpeedMultiplier: 1.0,
           });
@@ -169,6 +176,7 @@ export const useUniverseStore = create<UniverseStore>()(
       name: 'kepler-devcosmos-state',
       partialize: (state) => ({
         completedChallenges: state.completedChallenges,
+        plottedCount: state.plottedCount,
         systemHarmony: state.systemHarmony,
         isAudioMuted: state.isAudioMuted,
         pilotCallsign: state.pilotCallsign,

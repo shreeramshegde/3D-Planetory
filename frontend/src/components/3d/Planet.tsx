@@ -2,7 +2,7 @@ import { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { ExtendedPlanetConfig } from '../../data/planets';
+import { PlanetConfig, MoonConfig } from '../../types/universe';
 import { useUniverseStore } from '../../store/useUniverseStore';
 import { soundEngine } from '../../audio/soundEngine';
 import { OrbitRing } from './OrbitRing';
@@ -16,7 +16,7 @@ import {
 } from '../../utils/proceduralTextures';
 
 interface PlanetProps {
-  planet: ExtendedPlanetConfig;
+  planet: PlanetConfig;
 }
 
 export const Planet = ({ planet }: PlanetProps) => {
@@ -185,7 +185,7 @@ export const Planet = ({ planet }: PlanetProps) => {
         {/* Orbiting Moons */}
         {planet.moons && (
           <group ref={moonsRef}>
-            {planet.moons.map((moon, idx) => (
+            {planet.moons.map((moon: MoonConfig, idx: number) => (
               <group key={idx}>
                 <mesh position={[moon.distance, 0, 0]}>
                   <sphereGeometry args={[moon.size, 20, 20]} />
@@ -200,7 +200,7 @@ export const Planet = ({ planet }: PlanetProps) => {
           </group>
         )}
 
-        {/* Clean, Non-AI Human-Crafted Reticle Tag */}
+        {/* Observatory Surveyor Reticle Tag */}
         {(!activePlanetId || isCurrentFocus || isHovered) && (
           <Html
             position={[0, planet.size * 1.6, 0]}
@@ -210,7 +210,7 @@ export const Planet = ({ planet }: PlanetProps) => {
           >
             <div
               onClick={() => setActivePlanet(planet.id)}
-              className={`cursor-pointer transition-all duration-300 pointer-events-auto flex flex-col items-center select-none ${
+              className={`cursor-pointer transition-all duration-200 pointer-events-auto flex flex-col items-center select-none ${
                 isCurrentFocus
                   ? 'scale-105'
                   : isHovered
@@ -219,23 +219,23 @@ export const Planet = ({ planet }: PlanetProps) => {
               }`}
             >
               <div
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-display tracking-wider backdrop-blur-xl border shadow-xl flex items-center gap-2 transition-all ${
+                className={`px-3 py-1 rounded-[2px] text-xs font-mono tracking-wider border flex items-center gap-2 transition-all ${
                   isCurrentFocus
-                    ? 'bg-slate-950/90 text-white border-cyan-400 shadow-cyan-500/30'
-                    : 'bg-slate-950/80 text-slate-200 border-white/15 hover:border-cyan-400/80'
+                    ? 'bg-[#0A0B0F] text-[#E8E3D6] border-[#FF5A36]'
+                    : 'bg-[#0A0B0F]/90 text-[#E8E3D6]/80 border-bone/15 hover:border-bone/40'
                 }`}
               >
                 {isCompleted && (
-                  <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                  <Check className="w-3 h-3 text-[#FF5A36] flex-shrink-0" />
                 )}
-                <span className="font-bold text-white tracking-wide">{planet.name}</span>
-                <span className="text-[10px] font-tech text-cyan-300 border-l border-white/15 pl-2 tracking-wider uppercase">
-                  {planet.domain.split('&')[0].trim()}
+                <span className="font-serif text-sm text-[#E8E3D6] tracking-normal">{planet.name}</span>
+                <span className="text-[10px] font-mono text-[#E8E3D6]/50 border-l border-bone/15 pl-2 tracking-wider">
+                  {planet.catalogId}
                 </span>
               </div>
               <div
-                className={`w-[1px] h-3.5 transition-colors ${
-                  isCurrentFocus || isHovered ? 'bg-cyan-400' : 'bg-slate-600'
+                className={`w-[1px] h-3 transition-colors ${
+                  isCurrentFocus || isHovered ? 'bg-[#FF5A36]' : 'bg-bone/20'
                 }`}
               />
             </div>

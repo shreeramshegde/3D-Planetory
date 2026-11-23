@@ -5,43 +5,41 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    borderRadius: {
+      none: '0px',
+      sm: '2px',
+      DEFAULT: '3px',
+      md: '4px',
+    },
     extend: {
       colors: {
-        space: {
-          950: '#030611',
-          900: '#060a17',
-          850: '#0a0f24',
-          800: '#0e1630',
-          700: '#182346',
+        ink: {
+          DEFAULT: '#0A0B0F',
+          panel: '#111319',
+          elevated: '#171A23',
+          border: 'rgba(232, 227, 214, 0.14)',
+          divider: 'rgba(232, 227, 214, 0.08)',
         },
-        celestial: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
+        bone: {
+          DEFAULT: '#E8E3D6',
+          muted: 'rgba(232, 227, 214, 0.65)',
+          faint: 'rgba(232, 227, 214, 0.38)',
+          hairline: 'rgba(232, 227, 214, 0.14)',
         },
-        starlight: '#f8fafc',
-        platinum: '#cbd5e1',
+        vermilion: {
+          DEFAULT: '#FF5A36',
+          hover: '#FF4119',
+          dim: 'rgba(255, 90, 54, 0.18)',
+        },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        display: ['Space Grotesk', 'sans-serif'],
-        tech: ['Rajdhani', 'sans-serif'],
-        mono: ['Space Grotesk', 'Courier New', 'monospace'],
+        serif: ['Instrument Serif', 'Georgia', 'serif'],
+        sans: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
-      boxShadow: {
-        'glass': '0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.18)',
-        'glass-glow': '0 0 35px rgba(56, 189, 248, 0.25), 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 1px 0 rgba(255, 255, 255, 0.22)',
-        'neon-cyan': '0 0 25px rgba(56, 189, 248, 0.5)',
-        'neon-purple': '0 0 25px rgba(192, 132, 252, 0.5)',
-        'neon-amber': '0 0 25px rgba(251, 191, 36, 0.5)',
+      transitionTimingFunction: {
+        'observatory': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
       },
-      animation: {
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'spin-slow': 'spin 24s linear infinite',
-      }
     },
   },
   plugins: [],

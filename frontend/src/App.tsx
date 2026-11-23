@@ -10,24 +10,23 @@ import { soundEngine } from './audio/soundEngine';
 
 function UniverseView() {
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#030712] select-none">
-      {/* 3D WebGL Universe Canvas */}
+    <main className="relative w-screen h-screen overflow-hidden bg-[#0A0B0F] select-none text-[#E8E3D6]">
+      {/* 3D WebGL Observatory Canvas */}
       <UniverseCanvas />
 
-      {/* 2D Sci-Fi Aerospace HUD Overlay */}
+      {/* Diegetic Surveyor HUD Overlay */}
       <Header />
       <PlanetSelector />
       <PlanetDossier />
       <VictoryOverlay />
 
-      {/* Subtle CRT scanline aesthetic overlay */}
-      <div className="absolute inset-0 pointer-events-none scanlines z-10" />
+      {/* 4% CSS-only SVG Film Grain Overlay */}
+      <div className="absolute inset-0 pointer-events-none film-grain z-10" />
     </main>
   );
 }
 
 export function App() {
-  // Start ambient audio on first user gesture if not muted
   useEffect(() => {
     const handleFirstGesture = () => {
       soundEngine.startAmbient();

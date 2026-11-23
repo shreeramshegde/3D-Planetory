@@ -1,4 +1,4 @@
-export type TechnicalDomainId = 'cloud' | 'ai' | 'backend' | 'frontend' | 'security';
+export type TechnicalDomainId = 'kernel' | 'cloud' | 'ai' | 'backend' | 'frontend' | 'security';
 
 export interface MoonConfig {
   name: string;
@@ -12,7 +12,7 @@ export interface ChallengeConfig {
   id: string;
   title: string;
   instruction: string;
-  difficulty: 'Novice' | 'Advanced' | 'Expert';
+  difficulty: 'Foundation' | 'Intermediate' | 'Advanced';
   rewardXP: number;
   objective: string;
 }
@@ -20,6 +20,7 @@ export interface ChallengeConfig {
 export interface PlanetConfig {
   id: TechnicalDomainId;
   name: string;
+  catalogId: string; // e.g. "OBS-00", "OBS-01"
   domain: string;
   color: string;
   secondaryColor: string;
@@ -28,6 +29,8 @@ export interface PlanetConfig {
   orbitSpeed: number;
   rotationSpeed: number;
   size: number;
+  axialTilt: number;
+  inclination: number;
   hasRings?: boolean;
   ringInnerRadius?: number;
   ringOuterRadius?: number;
@@ -49,7 +52,8 @@ export interface UniverseStore {
   orbitSpeedMultiplier: number;
   isAudioMuted: boolean;
   isControlsLocked: boolean;
-  systemHarmony: number; // 0 - 100
+  systemHarmony: number; // 0 to 100 percentage
+  plottedCount: number; // 0 to 6 plotted bodies
   pilotCallsign: string;
 
   // Actions
