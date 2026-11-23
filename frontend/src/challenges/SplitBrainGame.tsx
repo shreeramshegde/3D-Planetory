@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSimulationLoop } from '../engine/useSimulationLoop';
 import { splitBrainSim } from '../engine/simulations/splitBrainSim';
 import { useUniverseStore } from '../store/useUniverseStore';
-import { Server, RotateCcw, Scissors, Link, Zap, ShieldCheck, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Server, RotateCcw, Scissors, Link, Zap, ShieldCheck, AlertTriangle, CheckCircle, Play, Pause } from 'lucide-react';
 
 export const SplitBrainGame = () => {
   const completeChallenge = useUniverseStore((s) => s.completeChallenge);
@@ -16,6 +16,8 @@ export const SplitBrainGame = () => {
     inputLog,
     sendInput,
     reset,
+    isRunning,
+    setIsRunning,
   } = useSimulationLoop(splitBrainSim, 77);
 
   if (state.isWon && !hasReportedWin) {
@@ -63,14 +65,25 @@ export const SplitBrainGame = () => {
           <span className="font-semibold text-bone">RAFT CONSENSUS CHAOS</span>
           <span className="text-bone-faint">// 5-NODE DISTRIBUTED CLUSTER</span>
         </div>
-        <div className="flex items-center gap-4 tabular-nums">
+        <div className="flex items-center gap-3 tabular-nums">
           <span className="text-vermilion">SCORE: {score}</span>
+          <button
+            onClick={() => setIsRunning(!isRunning)}
+            disabled={state.isFailed || state.isWon}
+            className={`p-1 transition-colors ${
+              isRunning ? 'text-vermilion hover:text-white' : 'text-bone hover:text-vermilion'
+            } disabled:opacity-30`}
+            title={isRunning ? 'Pause cluster network' : 'Resume cluster network'}
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
           <button
             onClick={() => {
               setHasReportedWin(false);
               reset();
             }}
             className="p-1 hover:text-vermilion transition-colors"
+            title="Reset Raft cluster"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>

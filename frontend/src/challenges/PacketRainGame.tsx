@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSimulationLoop } from '../engine/useSimulationLoop';
 import { packetRainSim, ServiceNodeType } from '../engine/simulations/packetRainSim';
 import { useUniverseStore } from '../store/useUniverseStore';
-import { Cloud, RotateCcw, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Cloud, RotateCcw, RefreshCw, AlertTriangle, CheckCircle, Play, Pause } from 'lucide-react';
 
 export const PacketRainGame = () => {
   const completeChallenge = useUniverseStore((s) => s.completeChallenge);
@@ -16,7 +16,9 @@ export const PacketRainGame = () => {
     inputLog,
     sendInput,
     reset,
-  } = useSimulationLoop(packetRainSim, 101);
+    isRunning,
+    setIsRunning,
+  } = useSimulationLoop(packetRainSim, 101, { startPaused: true });
 
   if (state.isWon && !hasReportedWin) {
     setHasReportedWin(true);
@@ -55,20 +57,42 @@ export const PacketRainGame = () => {
           <span className="font-semibold text-bone">PACKET RAIN TOPOLOGY</span>
           <span className="text-bone-faint">// WAVE {state.wave} / 3</span>
         </div>
-        <div className="flex items-center gap-4 tabular-nums">
+        <div className="flex items-center gap-3 tabular-nums">
           <span>BUDGET: ${state.budget}</span>
           <span className="text-vermilion">SCORE: {score}</span>
+          <button
+            onClick={() => setIsRunning(!isRunning)}
+            disabled={state.isFailed || state.isWon}
+            className={`p-1 transition-colors ${
+              isRunning ? 'text-vermilion hover:text-white' : 'text-bone hover:text-vermilion'
+            } disabled:opacity-30`}
+            title={isRunning ? 'Pause packet stream' : 'Resume packet stream'}
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
           <button
             onClick={() => {
               setHasReportedWin(false);
               reset();
             }}
             className="p-1 hover:text-vermilion transition-colors"
+            title="Reset topology"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
+
+      {/* Primary Action Button (when paused/ready) */}
+      {!isRunning && !state.isFailed && !state.isWon && (
+        <button
+          onClick={() => setIsRunning(true)}
+          className="w-full py-2 bg-vermilion hover:bg-vermilion-hover text-ink font-semibold uppercase text-xs flex items-center justify-center gap-2 transition-colors my-1 tracking-wider"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>{state.totalSpawned > 0 ? 'Resume Packet Stream' : 'Start Packet Traffic Wave'}</span>
+        </button>
+      )}
 
       {/* Chaos Alert Banner */}
       {state.chaosTriggered && (

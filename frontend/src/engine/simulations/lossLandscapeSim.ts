@@ -31,6 +31,7 @@ export type LossLandscapeInput =
   | { type: 'SET_OPTIMIZER'; optimizer: OptimizerType }
   | { type: 'SET_LEARNING_RATE'; lr: number }
   | { type: 'SET_MOMENTUM'; beta: number }
+  | { type: 'RESET_TRAJECTORY' }
   | { type: 'NUDGE'; dx: number; dy: number };
 
 // Analytical 3D Loss surface: Ravine with non-convex local extrema
@@ -94,22 +95,56 @@ export const lossLandscapeSim: Simulation<LossLandscapeState, LossLandscapeInput
   },
 
   step(state: LossLandscapeState, input: LossLandscapeInput | null, dt: number): LossLandscapeState {
-    if (state.isDiverged || state.isWon) return state;
-
     let opt = state.optimizer;
     let lr = state.learningRate;
     let beta = state.momentumBeta;
     let x = state.x;
     let y = state.y;
+    let isDiverged = state.isDiverged;
+    let isWon = state.isWon;
 
     if (input) {
       if (input.type === 'SET_OPTIMIZER') opt = input.optimizer;
       else if (input.type === 'SET_LEARNING_RATE') lr = Math.max(0.001, Math.min(0.4, input.lr));
       else if (input.type === 'SET_MOMENTUM') beta = Math.max(0.0, Math.min(0.98, input.beta));
-      else if (input.type === 'NUDGE') {
+      else if (input.type === 'RESET_TRAJECTORY') {
+        const startX = -3.2 + (state.stepCount % 10) * 0.1;
+        const startY = 2.4 - (state.stepCount % 5) * 0.1;
+        const initialLoss = computeLoss(startX, startY);
+        return {
+          ...state,
+          x: startX,
+          y: startY,
+          vx: 0,
+          vy: 0,
+          m_x: 0,
+          m_y: 0,
+          v_x: 0,
+          v_y: 0,
+          adamStep: 0,
+          optimizer: opt,
+          learningRate: lr,
+          momentumBeta: beta,
+          currentLoss: initialLoss,
+          gradNorm: 0,
+          trajectory: [[startX, startY, initialLoss]],
+          convergenceTimer: 0,
+          isDiverged: false,
+          isWon: false,
+        };
+      } else if (input.type === 'NUDGE') {
         x += input.dx;
         y += input.dy;
       }
+    }
+
+    if (dt <= 0 || isDiverged || isWon) {
+      return {
+        ...state,
+        optimizer: opt,
+        learningRate: lr,
+        momentumBeta: beta,
+      };
     }
 
     const [gx, gy] = computeGradients(x, y);

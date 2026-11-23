@@ -21,6 +21,7 @@ export interface PipelineUpgrades {
 export interface PixelPipelineState {
   time: number;
   currentFrame: number;
+  frameTimer: number;
   frameDurationMs: number;
   droppedFrames: number;
   smoothFrames: number;
@@ -76,6 +77,7 @@ export const pixelPipelineSim: Simulation<PixelPipelineState, PixelPipelineInput
     return {
       time: 0,
       currentFrame: 0,
+      frameTimer: 0,
       frameDurationMs: 0,
       droppedFrames: 0,
       smoothFrames: 0,
@@ -94,11 +96,24 @@ export const pixelPipelineSim: Simulation<PixelPipelineState, PixelPipelineInput
   },
 
   step(state: PixelPipelineState, input: PixelPipelineInput | null, dt: number): PixelPipelineState {
-    if (state.isFailed || state.isWon) return state;
+    if (state.isFailed || state.isWon) {
+      if (input && input.type === 'BUY_UPGRADE') {
+        const cost = input.upgrade === 'batchReads' ? 30 : input.upgrade === 'willChangeLayer' ? 25 : 20;
+        if (state.budgetCoins >= cost && !state.upgrades[input.upgrade]) {
+          return {
+            ...state,
+            budgetCoins: state.budgetCoins - cost,
+            upgrades: { ...state.upgrades, [input.upgrade]: true },
+          };
+        }
+      }
+      return state;
+    }
 
     const nextState: PixelPipelineState = {
       ...state,
       time: state.time + dt,
+      frameTimer: (state.frameTimer || 0) + dt,
       upgrades: { ...state.upgrades },
       itemsQueue: state.itemsQueue.map((item) => ({ ...item })),
       activeItems: state.activeItems.map((item) => ({ ...item })),
@@ -106,7 +121,7 @@ export const pixelPipelineSim: Simulation<PixelPipelineState, PixelPipelineInput
 
     const rng = createMulberry32((state.prngState + Math.floor(state.time * 60)) >>> 0);
 
-    // 1. Process player actions and upgrades
+    // 1. Process player actions and upgrades immediately
     if (input) {
       if (input.type === 'BUY_UPGRADE') {
         const cost = input.upgrade === 'batchReads' ? 30 : input.upgrade === 'willChangeLayer' ? 25 : 20;
@@ -129,77 +144,92 @@ export const pixelPipelineSim: Simulation<PixelPipelineState, PixelPipelineInput
       }
     }
 
-    // 2. Continuous frame progression (simulate 60Hz tick)
-    nextState.currentFrame++;
+    if (dt <= 0) return nextState;
 
-    // Spawn new mutations into queue
-    if (rng() < 0.25 && nextState.itemsQueue.length < 10) {
-      const id = nextState.currentFrame * 10 + nextState.itemsQueue.length;
-      const roll = rng();
-      let type: MutationType = 'COMPOSITOR_OPACITY';
-      let cost = 1.8;
-
-      if (roll < 0.35) {
-        type = 'FORCED_SYNC_LAYOUT';
-        cost = 15.0;
-      } else if (roll < 0.65) {
-        type = 'FULL_REFLOW';
-        cost = 8.0;
-      } else if (roll < 0.85) {
-        type = 'REPAINT_COLOR';
-        cost = 4.5;
-      }
-
-      nextState.itemsQueue.push({
-        id,
-        type,
-        name: type.toLowerCase(),
-        stage: 'JS',
-        currentCostMs: 0,
-        totalCostMs: cost,
-      });
-    }
-
-    // Take top 2 items from queue into frame
-    while (nextState.activeItems.length < 3 && nextState.itemsQueue.length > 0) {
-      const item = nextState.itemsQueue.shift()!;
-      // Apply upgrades
-      if (nextState.upgrades.batchReads && item.type === 'FORCED_SYNC_LAYOUT') {
-        item.type = 'FULL_REFLOW';
-        item.totalCostMs = 7.0; // Batch reads eliminates forced reflow!
-      }
-      if (nextState.upgrades.willChangeLayer && item.type === 'COMPOSITOR_OPACITY') {
-        item.totalCostMs = 0.8;
-      }
-      if (nextState.upgrades.workerOffload) {
-        item.totalCostMs = Math.max(1.0, item.totalCostMs - 2.5);
-      }
-      nextState.activeItems.push(item);
-    }
-
-    // Compute frame cost for this frame
-    let frameCost = 2.5; // Base browser overhead (V8 GC, event loop)
-    for (const item of nextState.activeItems) {
-      frameCost += item.totalCostMs;
-    }
-    nextState.frameDurationMs = frameCost;
-
-    // Frame budget determination
-    if (frameCost > FRAME_BUDGET_MS) {
-      nextState.droppedFrames++;
-    } else {
-      nextState.smoothFrames++;
-      nextState.budgetCoins += 1;
-    }
-
-    // Clear completed items from frame
-    nextState.activeItems = [];
-
-    // Check terminal conditions
+    // Check terminal conditions immediately
     if (nextState.droppedFrames >= MAX_DROPPED_FAIL) {
       nextState.isFailed = true;
+      return nextState;
     } else if (nextState.smoothFrames >= TARGET_SMOOTH_FRAMES) {
       nextState.isWon = true;
+      return nextState;
+    }
+
+    // 2. Continuous frame progression: paced at 250ms per frame for human reaction time
+    const FRAME_TICK_SEC = 0.25;
+    if (nextState.frameTimer >= FRAME_TICK_SEC) {
+      nextState.frameTimer -= FRAME_TICK_SEC;
+      nextState.currentFrame++;
+
+      // Spawn new mutations into queue
+      if (rng() < 0.25 && nextState.itemsQueue.length < 10) {
+        const id = nextState.currentFrame * 10 + nextState.itemsQueue.length;
+        const roll = rng();
+        let type: MutationType = 'COMPOSITOR_OPACITY';
+        let cost = 1.8;
+
+        if (roll < 0.35) {
+          type = 'FORCED_SYNC_LAYOUT';
+          cost = 15.0;
+        } else if (roll < 0.65) {
+          type = 'FULL_REFLOW';
+          cost = 8.0;
+        } else if (roll < 0.85) {
+          type = 'REPAINT_COLOR';
+          cost = 4.5;
+        }
+
+        nextState.itemsQueue.push({
+          id,
+          type,
+          name: type.toLowerCase(),
+          stage: 'JS',
+          currentCostMs: 0,
+          totalCostMs: cost,
+        });
+      }
+
+      // Take top 2 items from queue into frame
+      while (nextState.activeItems.length < 3 && nextState.itemsQueue.length > 0) {
+        const item = nextState.itemsQueue.shift()!;
+        // Apply upgrades
+        if (nextState.upgrades.batchReads && item.type === 'FORCED_SYNC_LAYOUT') {
+          item.type = 'FULL_REFLOW';
+          item.totalCostMs = 7.0; // Batch reads eliminates forced reflow!
+        }
+        if (nextState.upgrades.willChangeLayer && item.type === 'COMPOSITOR_OPACITY') {
+          item.totalCostMs = 0.8;
+        }
+        if (nextState.upgrades.workerOffload) {
+          item.totalCostMs = Math.max(1.0, item.totalCostMs - 2.5);
+        }
+        nextState.activeItems.push(item);
+      }
+
+      // Compute frame cost for this frame
+      let frameCost = 2.5; // Base browser overhead (V8 GC, event loop)
+      for (const item of nextState.activeItems) {
+        frameCost += item.totalCostMs;
+      }
+      nextState.frameDurationMs = frameCost;
+
+      // Frame budget determination
+      if (frameCost > FRAME_BUDGET_MS) {
+        nextState.droppedFrames++;
+      } else {
+        nextState.smoothFrames++;
+        nextState.budgetCoins += 1;
+      }
+
+      // Clear completed items from frame
+      nextState.activeItems = [];
+
+      // Check terminal conditions
+      if (nextState.droppedFrames >= MAX_DROPPED_FAIL) {
+        nextState.isFailed = true;
+      } else if (nextState.smoothFrames >= TARGET_SMOOTH_FRAMES) {
+        nextState.isWon = true;
+      }
     }
 
     return nextState;

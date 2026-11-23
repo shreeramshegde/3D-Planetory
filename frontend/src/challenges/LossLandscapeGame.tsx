@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSimulationLoop } from '../engine/useSimulationLoop';
 import { lossLandscapeSim, OptimizerType } from '../engine/simulations/lossLandscapeSim';
 import { useUniverseStore } from '../store/useUniverseStore';
-import { BrainCircuit, RotateCcw, AlertOctagon, CheckCircle } from 'lucide-react';
+import { BrainCircuit, RotateCcw, AlertOctagon, CheckCircle, Play, Pause } from 'lucide-react';
 
 export const LossLandscapeGame = () => {
   const completeChallenge = useUniverseStore((s) => s.completeChallenge);
@@ -16,7 +16,9 @@ export const LossLandscapeGame = () => {
     inputLog,
     sendInput,
     reset,
-  } = useSimulationLoop(lossLandscapeSim, 42);
+    isRunning,
+    setIsRunning,
+  } = useSimulationLoop(lossLandscapeSim, 42, { startPaused: true });
 
   if (state.isWon && !hasReportedWin) {
     setHasReportedWin(true);
@@ -48,6 +50,17 @@ export const LossLandscapeGame = () => {
     sendInput({ type: 'SET_MOMENTUM', beta });
   };
 
+  const handleResetTrajectory = () => {
+    setHasReportedWin(false);
+    sendInput({ type: 'RESET_TRAJECTORY' });
+    setIsRunning(false);
+  };
+
+  const handleHardReset = () => {
+    setHasReportedWin(false);
+    reset();
+  };
+
   // Convert (x, y) coordinates to SVG canvas view [0..300, 0..160]
   const svgW = 320;
   const svgH = 150;
@@ -66,15 +79,23 @@ export const LossLandscapeGame = () => {
           <span className="font-semibold text-bone">LOSS LANDSCAPE OPTIMIZER</span>
           <span className="text-bone-faint">// NON-CONVEX MANIFOLD</span>
         </div>
-        <div className="flex items-center gap-4 tabular-nums">
+        <div className="flex items-center gap-3 tabular-nums">
           <span>STEP: {state.stepCount}</span>
           <span className="text-vermilion">SCORE: {score}</span>
           <button
-            onClick={() => {
-              setHasReportedWin(false);
-              reset();
-            }}
+            onClick={() => setIsRunning(!isRunning)}
+            disabled={state.isDiverged || state.isWon}
+            className={`p-1 transition-colors ${
+              isRunning ? 'text-vermilion hover:text-white' : 'text-bone hover:text-vermilion'
+            } disabled:opacity-30`}
+            title={isRunning ? 'Pause descent' : 'Resume descent'}
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
+          <button
+            onClick={handleHardReset}
             className="p-1 hover:text-vermilion transition-colors"
+            title="Reset simulation"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -89,16 +110,13 @@ export const LossLandscapeGame = () => {
             <span>NUMERICAL DIVERGENCE (EXPLODING GRADIENT)</span>
           </div>
           <p className="text-[11px] text-red-300">
-            Learning rate was too high for the steep ravine walls, causing parameter oscillation to explode to infinity.
+            Learning rate was too high for the steep ravine walls, causing parameter oscillation to explode. Adjust η below and reset.
           </p>
           <button
-            onClick={() => {
-              setHasReportedWin(false);
-              reset();
-            }}
-            className="px-3 py-1 bg-vermilion text-ink font-semibold text-xs mt-1"
+            onClick={handleResetTrajectory}
+            className="px-3 py-1 bg-vermilion hover:bg-vermilion-hover text-ink font-semibold text-xs mt-1 transition-colors"
           >
-            Reset Trajectory
+            Reset Trajectory (Keeps Adjusted η)
           </button>
         </div>
       )}
@@ -112,7 +130,24 @@ export const LossLandscapeGame = () => {
           <p className="text-[11px] text-emerald-300">
             Stabilized parameter weights at loss {state.currentLoss.toFixed(4)}. Score: {score}
           </p>
+          <button
+            onClick={handleResetTrajectory}
+            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-ink font-semibold text-xs mt-1 transition-colors"
+          >
+            Re-run Trajectory
+          </button>
         </div>
+      )}
+
+      {/* Primary Action Button (when paused/ready) */}
+      {!isRunning && !state.isDiverged && !state.isWon && (
+        <button
+          onClick={() => setIsRunning(true)}
+          className="w-full py-2 bg-vermilion hover:bg-vermilion-hover text-ink font-semibold uppercase text-xs flex items-center justify-center gap-2 transition-colors my-1 tracking-wider"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>{state.stepCount > 0 ? 'Resume Gradient Descent' : 'Start Gradient Descent'}</span>
+        </button>
       )}
 
       {/* 2D Contour Map / Trajectory View */}

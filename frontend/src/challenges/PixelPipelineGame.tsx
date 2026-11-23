@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSimulationLoop } from '../engine/useSimulationLoop';
 import { pixelPipelineSim, PipelineUpgrades } from '../engine/simulations/pixelPipelineSim';
 import { useUniverseStore } from '../store/useUniverseStore';
-import { Layers, RotateCcw, Zap, Gauge, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Layers, RotateCcw, Zap, Gauge, AlertTriangle, CheckCircle, Play, Pause } from 'lucide-react';
 
 export const PixelPipelineGame = () => {
   const completeChallenge = useUniverseStore((s) => s.completeChallenge);
@@ -16,7 +16,9 @@ export const PixelPipelineGame = () => {
     inputLog,
     sendInput,
     reset,
-  } = useSimulationLoop(pixelPipelineSim, 33);
+    isRunning,
+    setIsRunning,
+  } = useSimulationLoop(pixelPipelineSim, 33, { startPaused: true });
 
   if (state.isWon && !hasReportedWin) {
     setHasReportedWin(true);
@@ -56,15 +58,26 @@ export const PixelPipelineGame = () => {
           <span className="font-semibold text-bone">BROWSER PIXEL PIPELINE</span>
           <span className="text-bone-faint">// 16.6MS FRAME BUDGET</span>
         </div>
-        <div className="flex items-center gap-4 tabular-nums">
+        <div className="flex items-center gap-3 tabular-nums">
           <span>COINS: {state.budgetCoins}</span>
           <span className="text-vermilion">SCORE: {score}</span>
+          <button
+            onClick={() => setIsRunning(!isRunning)}
+            disabled={state.isFailed || state.isWon}
+            className={`p-1 transition-colors ${
+              isRunning ? 'text-vermilion hover:text-white' : 'text-bone hover:text-vermilion'
+            } disabled:opacity-30`}
+            title={isRunning ? 'Pause benchmark' : 'Resume benchmark'}
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
           <button
             onClick={() => {
               setHasReportedWin(false);
               reset();
             }}
             className="p-1 hover:text-vermilion transition-colors"
+            title="Reset benchmark"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -82,7 +95,7 @@ export const PixelPipelineGame = () => {
             </span>
           </div>
           <div className="flex items-center gap-3 text-[10px] tabular-nums text-bone-muted">
-            <span className="text-emerald-400">Smooth: {state.smoothFrames}</span>
+            <span className="text-emerald-400">Smooth: {state.smoothFrames} / 35</span>
             <span className={state.droppedFrames > 5 ? 'text-red-400 font-bold' : 'text-bone-faint'}>
               Dropped: {state.droppedFrames} / 9
             </span>
@@ -97,6 +110,17 @@ export const PixelPipelineGame = () => {
           />
         </div>
       </div>
+
+      {/* Primary Action Button (when paused/ready) */}
+      {!isRunning && !state.isFailed && !state.isWon && (
+        <button
+          onClick={() => setIsRunning(true)}
+          className="w-full py-2 bg-vermilion hover:bg-vermilion-hover text-ink font-semibold uppercase text-xs flex items-center justify-center gap-2 transition-colors my-1 tracking-wider"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>{state.currentFrame > 0 ? 'Resume Frame Benchmark' : 'Start 60 FPS Benchmark'}</span>
+        </button>
+      )}
 
       {/* Overlays */}
       {state.isFailed && (

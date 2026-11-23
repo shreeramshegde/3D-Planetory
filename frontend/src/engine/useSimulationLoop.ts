@@ -1,19 +1,30 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Simulation, InputLogEntry, FIXED_TIMESTEP_SEC } from './types';
 
+export interface UseSimulationLoopOptions {
+  startPaused?: boolean;
+}
+
 export function useSimulationLoop<TState, TInput>(
   sim: Simulation<TState, TInput>,
-  initialSeed: number = 42
+  initialSeed: number = 42,
+  options?: UseSimulationLoopOptions
 ) {
   const [state, setState] = useState<TState>(() => sim.init(initialSeed));
   const [seed, setSeed] = useState<number>(initialSeed);
-  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [isRunning, setIsRunning] = useState<boolean>(!options?.startPaused);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isVictory, setIsVictory] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   const stateRef = useRef<TState>(state);
   stateRef.current = state;
+
+  const isRunningRef = useRef<boolean>(!options?.startPaused);
+  isRunningRef.current = isRunning;
+
+  const isGameOverRef = useRef<boolean>(false);
+  isGameOverRef.current = isGameOver;
 
   const currentInputRef = useRef<TInput | null>(null);
   const inputLogRef = useRef<InputLogEntry<TInput>[]>([]);
@@ -23,12 +34,26 @@ export function useSimulationLoop<TState, TInput>(
   const animFrameRef = useRef<number>(0);
 
   const sendInput = useCallback((input: TInput) => {
-    currentInputRef.current = input;
     inputLogRef.current.push({
       tick: tickRef.current,
       timeMs: Math.round(tickRef.current * FIXED_TIMESTEP_SEC * 1000),
       input,
     });
+
+    // If currently paused or game is over, immediately evaluate the input on the current state
+    // with dt = 0 so sliders, policies, and upgrades update without delay!
+    if (!isRunningRef.current || isGameOverRef.current) {
+      const next = sim.step(stateRef.current, input, 0);
+      stateRef.current = next;
+      setState(next);
+      currentInputRef.current = null;
+    } else {
+      currentInputRef.current = input;
+    }
+  }, [sim]);
+
+  const toggleRunning = useCallback(() => {
+    setIsRunning((prev) => !prev);
   }, []);
 
   const reset = useCallback((newSeed?: number) => {
@@ -42,11 +67,11 @@ export function useSimulationLoop<TState, TInput>(
     tickRef.current = 0;
     accumulatorRef.current = 0;
     lastTimeRef.current = 0;
-    setIsRunning(true);
     setIsGameOver(false);
     setIsVictory(false);
     setElapsedTime(0);
-  }, [sim]);
+    setIsRunning(!options?.startPaused);
+  }, [sim, options?.startPaused]);
 
   useEffect(() => {
     let active = true;
@@ -113,5 +138,6 @@ export function useSimulationLoop<TState, TInput>(
     sendInput,
     reset,
     setIsRunning,
+    toggleRunning,
   };
 }

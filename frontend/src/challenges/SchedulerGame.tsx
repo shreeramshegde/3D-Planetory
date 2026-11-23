@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSimulationLoop } from '../engine/useSimulationLoop';
 import { schedulerSim, SchedulingPolicy } from '../engine/simulations/schedulerSim';
 import { useUniverseStore } from '../store/useUniverseStore';
-import { Cpu, RotateCcw, AlertTriangle, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Cpu, RotateCcw, AlertTriangle, CheckCircle, ShieldAlert, Play, Pause } from 'lucide-react';
 
 export const SchedulerGame = () => {
   const completeChallenge = useUniverseStore((s) => s.completeChallenge);
@@ -16,6 +16,8 @@ export const SchedulerGame = () => {
     inputLog,
     sendInput,
     reset,
+    isRunning,
+    setIsRunning,
   } = useSimulationLoop(schedulerSim, 42);
 
   // Trigger store completion once won
@@ -59,9 +61,19 @@ export const SchedulerGame = () => {
           <span className="font-semibold text-bone">CPU ARBITRATION BENCHMARK</span>
           <span className="text-bone-faint">// 4-CORE PREEMPTIVE SCHEDULER</span>
         </div>
-        <div className="flex items-center gap-4 tabular-nums">
+        <div className="flex items-center gap-3 tabular-nums">
           <span>TIME: {elapsedTime.toFixed(1)}s</span>
           <span className="text-vermilion">SCORE: {score}</span>
+          <button
+            onClick={() => setIsRunning(!isRunning)}
+            disabled={state.isFailed || state.isWon}
+            className={`p-1 transition-colors ${
+              isRunning ? 'text-vermilion hover:text-white' : 'text-bone hover:text-vermilion'
+            } disabled:opacity-30`}
+            title={isRunning ? 'Pause scheduler' : 'Resume scheduler'}
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
           <button
             onClick={() => {
               setHasReportedWin(false);
