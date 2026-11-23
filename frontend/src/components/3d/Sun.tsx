@@ -88,8 +88,8 @@ export const Sun = () => {
             onClick={() => setActivePlanet(null)}
             className="cursor-pointer group flex flex-col items-center select-none"
           >
-            <div className="px-3 py-1 bg-amber-950/80 border border-amber-500/40 rounded text-xs font-mono tracking-wider text-amber-200 backdrop-blur shadow-lg shadow-amber-950/50 group-hover:border-amber-400 transition-colors">
-              The Kernel <span className="text-amber-400/70 text-[10px] ml-1">Central Star</span>
+            <div className="px-3.5 py-1.5 bg-amber-950/85 border border-amber-400/50 rounded-xl text-xs font-display tracking-wider text-amber-100 backdrop-blur-xl shadow-xl shadow-amber-950/60 group-hover:border-amber-300 transition-colors">
+              The Kernel <span className="text-amber-300 font-tech text-xs ml-1 tracking-wider uppercase">Central Star</span>
             </div>
             <div className="w-[1px] h-3.5 bg-amber-500/40" />
           </div>

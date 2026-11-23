@@ -219,17 +219,17 @@ export const Planet = ({ planet }: PlanetProps) => {
               }`}
             >
               <div
-                className={`px-3 py-1 rounded text-xs font-mono tracking-wider backdrop-blur border shadow-lg flex items-center gap-2 transition-colors ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-display tracking-wider backdrop-blur-xl border shadow-xl flex items-center gap-2 transition-all ${
                   isCurrentFocus
-                    ? 'bg-slate-900/95 text-white border-cyan-400 shadow-cyan-500/25'
-                    : 'bg-slate-950/85 text-slate-300 border-slate-700/80 hover:border-cyan-400/80'
+                    ? 'bg-slate-950/90 text-white border-cyan-400 shadow-cyan-500/30'
+                    : 'bg-slate-950/80 text-slate-200 border-white/15 hover:border-cyan-400/80'
                 }`}
               >
                 {isCompleted && (
                   <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                 )}
-                <span className="font-semibold text-slate-100">{planet.name}</span>
-                <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-2">
+                <span className="font-bold text-white tracking-wide">{planet.name}</span>
+                <span className="text-[10px] font-tech text-cyan-300 border-l border-white/15 pl-2 tracking-wider uppercase">
                   {planet.domain.split('&')[0].trim()}
                 </span>
               </div>
